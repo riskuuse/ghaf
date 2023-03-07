@@ -5,13 +5,14 @@
   microvm,
   netvm,
   proxyvm,
+  lynxvm,
 }: {modulesPath, ...}: {
   imports = [
     (modulesPath + "/profiles/minimal.nix")
 
     microvm.nixosModules.host
 
-    (import ./microvm.nix {inherit self netvm proxyvm;})
+    (import ./microvm.nix {inherit self netvm proxyvm lynxvm;})
     ./networking.nix
   ];
 
