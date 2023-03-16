@@ -16,7 +16,7 @@
       modules =
         [
           (import ../modules/host {
-            inherit self microvm netvm;
+            inherit self microvm netvm proxyvm lynxvm;
           })
 
           jetpack-nixos.nixosModules.default
@@ -31,10 +31,18 @@
         ++ extraModules;
     };
     netvm = "netvm-${name}-${variant}";
+    proxyvm = "proxyvm-${name}-${variant}";
+    lynxvm = "lynxvm-${name}-${variant}";
   in {
-    inherit hostConfiguration netvm;
+    inherit hostConfiguration netvm proxyvm lynxvm;
     name = "${name}-${variant}";
     netvmConfiguration = import ../microvmConfigurations/netvm {
+      inherit nixpkgs microvm system;
+    };
+    proxyvmConfiguration = import ../microvmConfigurations/proxyvm {
+      inherit nixpkgs microvm system;
+    };
+    lynxvmConfiguration = import ../microvmConfigurations/lynxvm {
       inherit nixpkgs microvm system;
     };
     package = hostConfiguration.config.system.build.${hostConfiguration.config.formatAttr};
@@ -69,7 +77,9 @@
 in {
   nixosConfigurations =
     builtins.listToAttrs (map (t: nixpkgs.lib.nameValuePair t.name t.hostConfiguration) (targets ++ crossTargets))
-    // builtins.listToAttrs (map (t: nixpkgs.lib.nameValuePair t.netvm t.netvmConfiguration) targets);
+    // builtins.listToAttrs (map (t: nixpkgs.lib.nameValuePair t.netvm t.netvmConfiguration) targets)
+    // builtins.listToAttrs (map (t: nixpkgs.lib.nameValuePair t.proxyvm t.proxyvmConfiguration) targets)
+    // builtins.listToAttrs (map (t: nixpkgs.lib.nameValuePair t.lynxvm t.lynxvmConfiguration) targets);
 
   packages = {
     aarch64-linux =
