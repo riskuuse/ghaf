@@ -8,6 +8,7 @@
 
   microvm.vms."${netvm}" = {
     flake = self;
+    # autostart = false;
     autostart = true;
   };
 }

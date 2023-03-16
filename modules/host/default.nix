@@ -4,7 +4,7 @@
   self,
   microvm,
   netvm,
-}: {modulesPath, ...}: {
+}: {modulesPath, config, pkgs, ...}: {
   imports = [
     (modulesPath + "/profiles/minimal.nix")
 
@@ -16,4 +16,11 @@
 
   networking.hostName = "ghaf-host";
   system.stateVersion = "22.11";
+
+  security.pam.loginLimits = [
+    { domain = "ghaf"; item = "memlock"; type = "-"; value = "unlimited"; }
+  ];
+
+  systemd.services."microvm@".serviceConfig.LimitMEMLOCK = 999999999;
+
 }

@@ -23,10 +23,11 @@ nixpkgs.lib.nixosSystem {
       # For WLAN firmwares
       hardware.enableRedistributableFirmware = true;
 
-      microvm.hypervisor = "crosvm";
+      microvm.hypervisor = "qemu";
+      # microvm.hypervisor = "crosvm";
 
       networking.enableIPv6 = false;
-      networking.interfaces.eth0.useDHCP = true;
+      networking.interfaces.eth0.useDHCP = false;
       networking.firewall.allowedTCPPorts = [22];
 
       # TODO: Idea. Maybe use udev rules for connecting
@@ -39,16 +40,12 @@ nixpkgs.lib.nixosSystem {
       #     path = "vendorid=0x050d,productid=0x2103";
       #   }
       # ];
-      # microvm.devices = [
-      #   {
-      #     bus = "pci";
-      #     path = "0001:00:00.0";
-      #   }
-      #   {
-      #     bus = "pci";
-      #     path = "0001:01:00.0";
-      #   }
-      # ];
+      microvm.devices = [
+        {
+          bus = "pci";
+          path = "0001:01:00.0";
+        }
+      ];
 
       # TODO: Move to user specified module - depending on the use x86_64
       #       laptop pci path
@@ -73,8 +70,7 @@ nixpkgs.lib.nixosSystem {
 
       networking.wireless = {
         enable = true;
-
-        # networks."SSID_OF_NETWORK".psk = "WPA_PASSWORD";
+        networks."Virranniemi_Guest".psk = "Vieraat ovat idiootteja.";
       };
     })
   ];
