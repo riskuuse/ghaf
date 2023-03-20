@@ -28,7 +28,27 @@ nixpkgs.lib.nixosSystem {
 
       networking.enableIPv6 = false;
       networking.interfaces.eth0.useDHCP = false;
-      networking.firewall.allowedTCPPorts = [22];
+      networking.firewall.allowedTCPPorts = [ 22 ];
+      networking.firewall.allowedUDPPorts = [ 67 ];
+      networking.useNetworkd = true;
+      networking.usePredictableInterfaceNames = true;
+      networking.nat = {
+        enable = true;
+        internalInterfaces = [ "eth0" ];
+        externalInterface = "wlp0s1f0";
+      };
+
+      systemd.network = {
+        networks."eth0" = {
+          matchConfig.Name = "eth0";
+          networkConfig.DHCPServer = true;
+          addresses = [
+            {
+              addressConfig.Address = "192.168.100.1/24";
+            }
+          ];
+        };
+      };
 
       # TODO: Idea. Maybe use udev rules for connecting
       # USB-devices to crosvm
@@ -63,7 +83,7 @@ nixpkgs.lib.nixosSystem {
       microvm.interfaces = [
         {
           type = "tap";
-          id = "vm-netvm";
+          id = "vmbr0-netvm";
           mac = "02:00:00:01:01:01";
         }
       ];
@@ -72,6 +92,18 @@ nixpkgs.lib.nixosSystem {
         enable = true;
         networks."Virranniemi_Guest".psk = "Vieraat ovat idiootteja.";
       };
+
+      environment.etc."systemd/network/40-eth0.network".text = pkgs.lib.mkForce ''
+        [Match]
+        Name=eth0
+
+        [Network]
+        DHCPServer=true
+
+        [Address]
+        Address=192.168.100.1/24
+      '';
+
     })
   ];
 }

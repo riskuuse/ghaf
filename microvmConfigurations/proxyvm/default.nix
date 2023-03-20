@@ -23,16 +23,21 @@ nixpkgs.lib.nixosSystem {
 
       networking.enableIPv6 = false;
       networking.interfaces.eth0.useDHCP = true;
+      networking.interfaces.eth1.useDHCP = true;
       networking.firewall.allowedTCPPorts = [ 22 80 443 8080 ];
 
       microvm.interfaces = [
         {
           type = "tap";
-          id = "vm-proxy";
+          id = "vmbr0-proxy";
           mac = "02:00:00:01:01:02";
         }
+        {
+          type = "tap";
+          id = "vmbr1-proxy";
+          mac = "02:00:00:01:02:02";
+        }
       ];
-
       environment.systemPackages = [
         pkgs.tcpdump
         pkgs.traceroute

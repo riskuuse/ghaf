@@ -28,7 +28,7 @@ nixpkgs.lib.nixosSystem {
       microvm.interfaces = [
         {
           type = "tap";
-          id = "vm-lynx";
+          id = "vmbr1-lynx";
           mac = "02:00:00:01:01:03";
         }
       ];
