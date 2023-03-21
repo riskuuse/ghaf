@@ -7,10 +7,10 @@
     useNetworkd = true;
   };
 
-  #networking.nat = {
-  #  enable = true;
-  #  internalInterfaces = [ "virbr1" ];
-  #};
+  networking.nat = {
+    enable = true;
+    internalInterfaces = [ "virbr1" ];
+  };
 
   systemd.network = {
     netdevs."virbr0".netdevConfig = {

@@ -25,30 +25,35 @@ nixpkgs.lib.nixosSystem {
 
       microvm.hypervisor = "qemu";
       # microvm.hypervisor = "crosvm";
-
-      networking.enableIPv6 = false;
-      networking.interfaces.eth0.useDHCP = false;
-      networking.firewall.allowedTCPPorts = [ 22 ];
-      networking.firewall.allowedUDPPorts = [ 67 ];
-      networking.useNetworkd = true;
-      networking.usePredictableInterfaceNames = true;
-      networking.nat = {
-        enable = true;
-        internalInterfaces = [ "eth0" ];
-        externalInterface = "wlp0s1f0";
-      };
-
-      systemd.network = {
-        networks."eth0" = {
-          matchConfig.Name = "eth0";
-          networkConfig.DHCPServer = true;
-          addresses = [
-            {
-              addressConfig.Address = "192.168.100.1/24";
-            }
-          ];
+      
+      networking = {
+        enableIPv6 = false;
+        interfaces.eth0.useDHCP = false;
+        firewall = {
+          allowedTCPPorts = [ 22 ];
+          allowedUDPPorts = [ 67 ];
+        };
+        useNetworkd = true;
+        usePredictableInterfaceNames = true;
+        nat = {
+          enable = true;
+          internalInterfaces = [ "eth0" ];
+          externalInterface = "wlp0s1f0";
         };
       };
+
+      # This does not work. Currently replaced by environment.etc configuration.
+      #systemd.network = {
+      #  networks."eth0" = {
+      #    matchConfig.Name = "eth0";
+      #    networkConfig.DHCPServer = true;
+      #    addresses = [
+      #      {
+      #        addressConfig.Address = "192.168.100.1/24";
+      #      }
+      #    ];
+      #  };
+      #};
 
       # TODO: Idea. Maybe use udev rules for connecting
       # USB-devices to crosvm
