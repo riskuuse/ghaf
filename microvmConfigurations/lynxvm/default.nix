@@ -24,6 +24,10 @@ nixpkgs.lib.nixosSystem {
       networking.enableIPv6 = false;
       networking.interfaces.eth0.useDHCP = true;
       networking.firewall.allowedTCPPorts = [ 22 80 443 8080 ];
+      networking.defaultGateway = {
+        address = "192.168.101.2";
+        # interface = "eth0";
+      };
 
       microvm.interfaces = [
         {

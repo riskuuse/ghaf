@@ -16,6 +16,11 @@ nixpkgs.lib.nixosSystem {
     microvm.nixosModules.microvm
 
     ({pkgs, ...}: {
+      # boot.kernel.sysctl = {
+      #  "net.ipv4.conf.all.forwarding" = true;
+      #  "net.ipv6.conf.all.forwarding" = false;  # Maybe enable later.
+      # };
+
       networking.hostName = "netvm";
       # TODO: Maybe inherit state version
       system.stateVersion = "22.11";
@@ -27,33 +32,50 @@ nixpkgs.lib.nixosSystem {
       # microvm.hypervisor = "crosvm";
       
       networking = {
+        # useDHCP = false;
         enableIPv6 = false;
         interfaces.eth0.useDHCP = false;
+        # interfaces.enp0s0.useDHCP = false;
         firewall = {
+          # enable = true;
           allowedTCPPorts = [ 22 ];
           allowedUDPPorts = [ 67 ];
         };
         useNetworkd = true;
-        usePredictableInterfaceNames = true;
+        # usePredictableInterfaceNames = true;
+        #vlans = {
+        #  idslan = {
+        #    id = 10;
+        #    interface = "enp1s0";
+        #  };
+        #};
         nat = {
           enable = true;
           internalInterfaces = [ "eth0" ];
           externalInterface = "wlp0s1f0";
+          # extraCommands = "iptables -t nat -A POSTROUTING -d 10.100.0.3 -p tcp -m tcp --dport 80 -j MASQUERADE";
         };
       };
 
-      # This does not work. Currently replaced by environment.etc configuration.
-      #systemd.network = {
-      #  networks."eth0" = {
-      #    matchConfig.Name = "eth0";
-      #    networkConfig.DHCPServer = true;
-      #    addresses = [
-      #      {
-      #        addressConfig.Address = "192.168.100.1/24";
-      #      }
-      #    ];
-      #  };
-      #};
+      systemd.network = {
+        networks."40-eth0" = {
+          matchConfig.Name = "eth0";
+          networkConfig.DHCPServer = true;
+          addresses = [
+            {
+              addressConfig.Address = "192.168.100.1/24";
+            }
+          ];
+          dhcpServerStaticLeases = [
+            {
+              dhcpServerStaticLeaseConfig = {
+                Address = "192.168.100.2";
+                MACAddress = "02:00:00:01:00:02";
+              };
+            }
+          ];
+        };
+      };
 
       # TODO: Idea. Maybe use udev rules for connecting
       # USB-devices to crosvm
@@ -89,7 +111,7 @@ nixpkgs.lib.nixosSystem {
         {
           type = "tap";
           id = "vmbr0-netvm";
-          mac = "02:00:00:01:01:01";
+          mac = "02:00:00:01:00:01";
         }
       ];
 
@@ -98,6 +120,7 @@ nixpkgs.lib.nixosSystem {
         networks."Virranniemi_Guest".psk = "Vieraat ovat idiootteja.";
       };
 
+/*    # Bubblegum solution. To be removed.
       environment.etc."systemd/network/40-eth0.network".text = pkgs.lib.mkForce ''
         [Match]
         Name=eth0
@@ -107,8 +130,12 @@ nixpkgs.lib.nixosSystem {
 
         [Address]
         Address=192.168.100.1/24
-      '';
 
+        [DHCPServerStaticLease]
+        Address=192.168.100.2
+        MACAddress=02:00:00:01:00:02
+      '';
+*/
     })
   ];
 }

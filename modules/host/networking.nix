@@ -38,6 +38,20 @@
           addressConfig.Address = "192.168.101.1/24";
         }
       ];
+      dhcpServerStaticLeases = [
+        {
+         dhcpServerStaticLeaseConfig = {
+            Address = "192.168.101.2";
+            MACAddress = "02:00:00:01:01:02";
+          };
+        }
+        {
+         dhcpServerStaticLeaseConfig = {
+            Address = "192.168.101.3";
+            MACAddress = "02:00:00:01:01:03";
+          };
+        }
+      ];
     };
     # Connect VM tun/tap devices to bridges
     networks."11-netvm" = {
