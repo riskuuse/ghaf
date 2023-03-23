@@ -56,7 +56,6 @@ nixpkgs.lib.nixosSystem {
           # extraCommands = "iptables -t nat -A POSTROUTING -d 10.100.0.3 -p tcp -m tcp --dport 80 -j MASQUERADE";
         };
       };
-
       systemd.network = {
         networks."40-eth0" = {
           matchConfig.Name = "eth0";
@@ -117,7 +116,7 @@ nixpkgs.lib.nixosSystem {
 
       networking.wireless = {
         enable = true;
-        networks."Virranniemi_Guest".psk = "Vieraat ovat idiootteja.";
+        networks."Virranniemi_Guest".psk = "Vieraat ovat idiootteja."; # "SSID" & "password"
       };
 
 /*    # Bubblegum solution. To be removed.

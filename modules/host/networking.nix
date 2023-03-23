@@ -32,6 +32,9 @@
     };
     networks."virbr1" = {
       matchConfig.Name = "virbr1";
+      networkConfig.DHCPServer = false;
+      /*
+      # This is here if dhcp is needed
       networkConfig.DHCPServer = true;
       addresses = [
         {
@@ -52,6 +55,7 @@
           };
         }
       ];
+      */
     };
     # Connect VM tun/tap devices to bridges
     networks."11-netvm" = {

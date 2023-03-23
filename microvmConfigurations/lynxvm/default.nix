@@ -1,3 +1,4 @@
+# Copyright 2022-2023 TII (SSRC) and the Ghaf contributors
 # SPDX-License-Identifier: Apache 2.0
 {
   nixpkgs,
@@ -21,14 +22,50 @@ nixpkgs.lib.nixosSystem {
 
       microvm.hypervisor = "qemu";
 
+      networking = {
+        enableIPv6 = false;
+        interfaces.eth0.useDHCP = true;
+        /*
+        interfaces.eth0 = {
+          useDHCP = false;
+          ipv4.addresses = [
+            {
+              address = "192.168.101.3/32";
+              prefixLength = 24;
+            }
+          ];
+        };
+        */
+        firewall.allowedTCPPorts = [ 22 80 443 8080 ];
+        defaultGateway = {
+          address = "192.168.101.2";
+          interface = "eth0";
+          metric = 10;
+        };
+      };
+      /*
       networking.enableIPv6 = false;
       networking.interfaces.eth0.useDHCP = true;
       networking.firewall.allowedTCPPorts = [ 22 80 443 8080 ];
       networking.defaultGateway = {
         address = "192.168.101.2";
-        # interface = "eth0";
+        interface = "eth0";
+        metric = 0;
       };
-
+      */
+      /*
+      systemd.network = {
+        networks."40-eth0" = {
+          matchConfig.Name = "eth0";
+          networkConfig.DHCPServer = false;
+          addresses = [
+            {
+              addressConfig.Address = "192.168.101.3/24";
+            }
+          ];
+        };
+      };
+      */
       microvm.interfaces = [
         {
           type = "tap";

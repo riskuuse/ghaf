@@ -1,3 +1,4 @@
+# Copyright 2022-2023 TII (SSRC) and the Ghaf contributors
 # SPDX-License-Identifier: Apache 2.0
 {
   nixpkgs,
@@ -21,21 +22,69 @@ nixpkgs.lib.nixosSystem {
 
       microvm.hypervisor = "qemu";
 
-      networking.enableIPv6 = false;
-      networking.interfaces.eth0.useDHCP = true;
-      networking.interfaces.eth1.useDHCP = true;
-      networking.firewall.allowedTCPPorts = [ 22 80 443 8080 ];
-      networking.defaultGateway = {
-        address = "192.168.100.1";
-        # interface = "eth1";
-      };
-      networking.nat = {
-        enable = true;
-        internalInterfaces = [ "eth0" ];
-        externalInterface = "eth1";
-        # extraCommands = "iptables -t nat -A POSTROUTING -d 10.100.0.3 -p tcp -m tcp --dport 80 -j MASQUERADE";
-      };  
+      networking = {
+        enableIPv6 = false;
+        # useDHCP = false;
+        interfaces.eth0.useDHCP = false;
+        interfaces.eth1.useDHCP = true;
+        useNetworkd = true;
 
+        /*
+        interfaces.eth0 = {
+          useDHCP = false;
+          ipv4.addresses = [
+            {
+              address = "192.168.101.2/32";
+              prefixLength = 24;
+            }
+          ];
+        };
+        interfaces.eth1 = {
+          useDHCP = false;
+          ipv4.addresses = [
+            {
+              address = "192.168.100.2/32";
+              prefixLength = 24;
+            }
+          ];
+        };
+        */
+        firewall.allowedTCPPorts = [ 22 80 443 8080 ];
+        firewall.allowedUDPPorts = [ 67 ];
+        /*
+        defaultGateway = {
+          address = "192.168.100.1";
+          interface = "eth1";
+          metric = 10;
+        };
+        */
+        nat = {
+          enable = true;
+          internalInterfaces = [ "eth0" ];
+          externalInterface = "eth1";
+          # extraCommands = "iptables -t nat -A POSTROUTING -d 10.100.0.3 -p tcp -m tcp --dport 80 -j MASQUERADE";
+        };  
+      };
+      systemd.network = {
+        networks."40-eth0" = {
+          matchConfig.Name = "eth0";
+          networkConfig.DHCPServer = true;
+          addresses = [
+            {
+              addressConfig.Address = "192.168.101.2/24";
+            }
+          ];
+          dhcpServerStaticLeases = [
+            {
+              dhcpServerStaticLeaseConfig = {
+                Address = "192.168.101.3";
+                MACAddress = "02:00:00:01:01:03";
+              };
+            }
+          ];
+        };
+        networks."40-eth1".dhcpV4Config.ClientIdentifier = "mac";
+      };
       microvm.interfaces = [
         {
           type = "tap";
