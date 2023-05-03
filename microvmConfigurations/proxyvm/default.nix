@@ -62,7 +62,10 @@ nixpkgs.lib.nixosSystem {
           enable = true;
           internalInterfaces = [ "eth0" ];
           externalInterface = "eth1";
-          # extraCommands = "iptables -t nat -A POSTROUTING -d 10.100.0.3 -p tcp -m tcp --dport 80 -j MASQUERADE";
+          extraCommands = ''
+	    iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8080
+	    iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 443 -j REDIRECT --to-port 8080
+	  '';
         };  
       };
       systemd.network = {
@@ -83,6 +86,8 @@ nixpkgs.lib.nixosSystem {
             }
           ];
         };
+	# This is required if networkd is in use,
+	# since in that case DUID is used as identifier by default
         networks."40-eth1".dhcpV4Config.ClientIdentifier = "mac";
       };
       microvm.interfaces = [
