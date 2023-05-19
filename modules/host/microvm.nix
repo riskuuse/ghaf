@@ -3,10 +3,16 @@
 {
   self,
   netvm,
+  lynxvm,
 }: {config, ...}: {
   microvm.host.enable = true;
 
   microvm.vms."${netvm}" = {
+    flake = self;
+    autostart = true;
+  };
+
+  microvm.vms."${lynxvm}" = {
     flake = self;
     autostart = true;
   };
