@@ -19,7 +19,7 @@
       modules =
         [
           (import ../modules/host {
-            inherit self microvm netvm;
+            inherit self microvm netvm idsvm;
           })
 
           {
@@ -57,8 +57,9 @@
         ++ extraModules;
     };
     netvm = "netvm-${name}-${variant}";
+    idsvm = "idsvm-${name}-${variant}";
   in {
-    inherit hostConfiguration netvm;
+    inherit hostConfiguration netvm idsvm;
     name = "${name}-${variant}";
     netvmConfiguration =
       (import ../modules/virtualization/microvm/netvm.nix {
@@ -85,6 +86,9 @@
           }
         ];
       };
+    idsvmConfiguration = import ../microvmConfigurations/idsvm {
+      inherit lib microvm system;
+    };
     package = hostConfiguration.config.system.build.${hostConfiguration.config.formatAttr};
   };
   debugModules = [../modules/development/usb-serial.nix {ghaf.development.usb-serial.enable = true;}];
@@ -95,7 +99,8 @@
 in {
   nixosConfigurations =
     builtins.listToAttrs (map (t: lib.nameValuePair t.name t.hostConfiguration) targets)
-    // builtins.listToAttrs (map (t: lib.nameValuePair t.netvm t.netvmConfiguration) targets);
+    // builtins.listToAttrs (map (t: lib.nameValuePair t.netvm t.netvmConfiguration) targets)
+    // builtins.listToAttrs (map (t: lib.nameValuePair t.idsvm t.idsvmConfiguration) targets);
   packages = {
     x86_64-linux =
       builtins.listToAttrs (map (t: lib.nameValuePair t.name t.package) targets);
