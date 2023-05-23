@@ -5,6 +5,7 @@
   microvm,
   netvm,
   idsvm,
+  lynxvm, 
 }: {...}: {
   imports = [
     (import ./minimal.nix)
@@ -13,7 +14,7 @@
 
     ../overlays/custom-packages.nix
 
-    (import ./microvm.nix {inherit self netvm idsvm;})
+    (import ./microvm.nix {inherit self netvm idsvm lynxvm;})
     ./networking.nix
   ];
 

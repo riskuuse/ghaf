@@ -4,6 +4,7 @@
   self,
   netvm,
   idsvm,
+  lynxvm,
 }: {config, ...}: {
   microvm.host.enable = true;
 
@@ -13,6 +14,11 @@
   };
 
   microvm.vms."${idsvm}" = {
+    flake = self;
+    autostart = true;
+  };
+
+  microvm.vms."${lynxvm}" = {
     flake = self;
     autostart = true;
   };
