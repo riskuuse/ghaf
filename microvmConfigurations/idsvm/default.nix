@@ -49,7 +49,7 @@ nixpkgs.lib.nixosSystem {
         interfaces.ethint1.useDHCP = false;
         useNetworkd = true;
 
-        firewall.allowedTCPPorts = [22 80 443 8080]; # SSH, HTTP, HTTPS, MiTM-proxy
+        firewall.allowedTCPPorts = [22 80 443 8080 8081]; # SSH, HTTP, HTTPS, MiTM-proxy
         firewall.allowedUDPPorts = [67]; # DHCP
 
         nat = {
