@@ -18,7 +18,7 @@
       modules =
         [
           (import ../modules/host {
-            inherit self microvm netvm idsvm;
+            inherit self microvm netvm idsvm example-appvm;
           })
 
           jetpack-nixos.nixosModules.default
@@ -48,8 +48,9 @@
     };
     netvm = "netvm-${name}-${variant}";
     idsvm = "idsvm-${name}-${variant}";
+    example-appvm = "example-appvm-${name}-${variant}";
   in {
-    inherit hostConfiguration netvm idsvm;
+    inherit hostConfiguration netvm idsvm example-appvm;
     name = "${name}-${variant}";
     netvmConfiguration =
       (import ../modules/virtualization/microvm/netvm.nix {
@@ -70,13 +71,16 @@
 
             networking.wireless = {
               enable = true;
-
+             
               # networks."SSID_OF_NETWORK".psk = "WPA_PASSWORD";
             };
           }
         ];
       };
     idsvmConfiguration = import ../microvmConfigurations/idsvm {
+      inherit lib microvm system;
+    };
+    example-appvmConfiguration = import ../microvmConfigurations/example-appvm {
       inherit lib microvm system;
     };
     package = hostConfiguration.config.system.build.${hostConfiguration.config.formatAttr};
@@ -115,6 +119,7 @@ in {
   nixosConfigurations =
     builtins.listToAttrs (map (t: lib.nameValuePair t.name t.hostConfiguration) (targets ++ crossTargets))
     // builtins.listToAttrs (map (t: lib.nameValuePair t.netvm t.netvmConfiguration) targets)
+    // builtins.listToAttrs (map (t: lib.nameValuePair t.example-appvm t.example-appvmConfiguration) targets)
     // builtins.listToAttrs (map (t: lib.nameValuePair t.idsvm t.idsvmConfiguration) targets);
 
   packages = {
