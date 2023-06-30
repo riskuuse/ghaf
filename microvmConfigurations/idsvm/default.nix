@@ -141,7 +141,6 @@ lib.nixosSystem {
       ];
       environment.systemPackages = [
         pkgs.tcpdump
-        pkgs.traceroute
         pkgs.mitmproxy
         pkgs.snort
         pkgs.screen
