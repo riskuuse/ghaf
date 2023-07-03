@@ -34,14 +34,13 @@ lib.nixosSystem {
           enableIPv6 = false;
           interfaces.ethint0.useDHCP = false;
           firewall.allowedTCPPorts = [22];
-          firewall.allowedUDPPorts = [67];
           useNetworkd = true;
         };
 
         microvm.interfaces = [
           {
             type = "tap";
-            id = "vm-netvm";
+            id = "vmbr0-netvm";
             mac = "02:00:00:01:01:01";
           }
         ];
@@ -49,6 +48,7 @@ lib.nixosSystem {
         networking.nat = {
           enable = true;
           internalInterfaces = ["ethint0"];
+          internalIPs = ["192.168.100.0/24"];
         };
 
         # Set internal network's interface name to ethint0
@@ -61,8 +61,6 @@ lib.nixosSystem {
           enable = true;
           networks."10-ethint0" = {
             matchConfig.MACAddress = "02:00:00:01:01:01";
-            networkConfig.DHCPServer = true;
-            dhcpServerConfig.ServerAddress = "192.168.100.1/24";
             addresses = [
               {
                 addressConfig.Address = "192.168.100.1/24";

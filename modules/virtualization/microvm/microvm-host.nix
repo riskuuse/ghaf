@@ -4,6 +4,8 @@
   self,
   microvm,
   netvm,
+  idsvm,
+  example-appvm,
 }: {
   config,
   lib,
@@ -24,6 +26,16 @@ in
       microvm.host.enable = true;
 
       microvm.vms."${netvm}" = {
+        flake = self;
+        autostart = true;
+      };
+
+      microvm.vms."${idsvm}" = {
+        flake = self;
+        autostart = true;
+      };
+
+      microvm.vms."${example-appvm}" = {
         flake = self;
         autostart = true;
       };

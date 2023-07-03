@@ -77,10 +77,10 @@
           }
         ];
       };
-    idsvmConfiguration = import ../microvmConfigurations/idsvm {
+    idsvmConfiguration = import ../modules/virtualization/microvm/idsvm.nix {
       inherit lib microvm system;
     };
-    example-appvmConfiguration = import ../microvmConfigurations/example-appvm {
+    example-appvmConfiguration = import ../modules/virtualization/microvm/example-appvm.nix {
       inherit lib microvm system;
     };
     package = hostConfiguration.config.system.build.${hostConfiguration.config.formatAttr};
