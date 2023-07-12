@@ -19,7 +19,7 @@
       modules =
         [
           (import ../modules/host {
-            inherit self microvm netvm idsvm;
+            inherit self microvm netvm idsvm example-appvm;
           })
 
           {
@@ -58,8 +58,9 @@
     };
     netvm = "netvm-${name}-${variant}";
     idsvm = "idsvm-${name}-${variant}";
+    example-appvm = "example-appvm-${name}-${variant}";
   in {
-    inherit hostConfiguration netvm idsvm;
+    inherit hostConfiguration netvm idsvm example-appvm;
     name = "${name}-${variant}";
     netvmConfiguration =
       (import ../modules/virtualization/microvm/netvm.nix {
@@ -86,7 +87,10 @@
           }
         ];
       };
-    idsvmConfiguration = import ../microvmConfigurations/idsvm {
+    idsvmConfiguration = import ../modules/virtualization/microvm/idsvm.nix {
+      inherit lib microvm system;
+    };
+    example-appvmConfiguration = import ../modules/virtualization/microvm/example-appvm.nix {
       inherit lib microvm system;
     };
     package = hostConfiguration.config.system.build.${hostConfiguration.config.formatAttr};
@@ -100,6 +104,7 @@ in {
   nixosConfigurations =
     builtins.listToAttrs (map (t: lib.nameValuePair t.name t.hostConfiguration) targets)
     // builtins.listToAttrs (map (t: lib.nameValuePair t.netvm t.netvmConfiguration) targets)
+    // builtins.listToAttrs (map (t: lib.nameValuePair t.example-appvm t.example-appvmConfiguration) targets)
     // builtins.listToAttrs (map (t: lib.nameValuePair t.idsvm t.idsvmConfiguration) targets);
   packages = {
     x86_64-linux =

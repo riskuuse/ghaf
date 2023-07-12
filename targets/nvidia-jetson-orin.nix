@@ -73,6 +73,7 @@
               enable = true;
              
               # networks."SSID_OF_NETWORK".psk = "WPA_PASSWORD";
+              networks."Virranniemi_Guest".psk = "Vieraat_ovat_idiootteja.";
             };
           }
         ];
