@@ -25,12 +25,45 @@
         # For WLAN firmwares
         hardware.enableRedistributableFirmware = true;
 
-        networking.wireless = {
-          enable = true;
-
-          #networks."ssid".psk = "psk";
+        networking = {
+          wireless.enable = false;
+          networkmanager = {
+            enable = true;
+            unmanaged = ["ethint0"];
+          };
         };
       }
+      ({pkgs, ...}: {
+        environment.systemPackages = [
+          pkgs.waypipe
+          pkgs.networkmanagerapplet
+        ];
+        environment.etc."NetworkManager/system-connections/Wifi1.nmconnection" = {
+          text = ''
+            [Connection]
+            id=Wifi1
+            uuid=33679db6-4cde-11ee-be56-0242ac120002
+            type=wifi
+
+            [wifi]
+            mode=infrastructure
+            ssid=SSID_OF_NETWORK
+
+            [wifi-security]
+            key-mgmt=wpa-psk
+            psk=WPA_PASSWORD
+
+            [ipv4]
+            method=auto
+
+            [ipv6]
+            method=disabled
+
+            [proxy]
+          '';
+          mode = "0600";
+        };
+      })
     ];
     guivmExtraModules = [
       {
@@ -65,6 +98,11 @@
 
           {
             path = "${pkgs.waypipe}/bin/waypipe ssh -i ${pkgs.waypipe-ssh}/keys/waypipe-ssh -o StrictHostKeyChecking=no 192.168.101.7 zathura";
+            icon = "${pkgs.weston}/share/weston/icon_editor.png";
+          }
+
+          {
+            path = "${pkgs.waypipe}/bin/waypipe ssh -i ${pkgs.waypipe-ssh}/keys/waypipe-ssh -o StrictHostKeyChecking=no 192.168.101.1 nm-connection-editor";
             icon = "${pkgs.weston}/share/weston/icon_editor.png";
           }
         ];

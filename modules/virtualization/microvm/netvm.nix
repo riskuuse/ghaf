@@ -3,9 +3,12 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }: let
   configHost = config;
+  waypipe-ssh = pkgs.callPackage ../../../user-apps/waypipe-ssh {};
+
   netvmBaseConfiguration = {
     imports = [
       ({lib, ...}: {
@@ -18,6 +21,8 @@
             debug.tools.enable = lib.mkDefault configHost.ghaf.development.debug.tools.enable;
           };
         };
+
+        users.users.${configHost.ghaf.users.accounts.user}.openssh.authorizedKeys.keyFiles = ["${waypipe-ssh}/keys/waypipe-ssh.pub"];
 
         networking.hostName = "netvm";
         system.stateVersion = lib.trivial.release;
