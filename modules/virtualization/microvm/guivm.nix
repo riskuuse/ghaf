@@ -34,6 +34,8 @@
           };
           systemPackages = [
             pkgs.waypipe
+            pkgs.d-spy
+            pkgs.networkmanagerapplet
           ];
         };
 

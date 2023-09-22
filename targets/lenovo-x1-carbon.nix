@@ -27,6 +27,7 @@
 
         networking = {
           wireless.enable = false;
+          wireless.dbusControlled = true;
           networkmanager = {
             enable = true;
             unmanaged = ["ethint0"];
@@ -38,16 +39,16 @@
           pkgs.waypipe
           pkgs.networkmanagerapplet
         ];
-        environment.etc."NetworkManager/system-connections/Wifi1.nmconnection" = {
+        environment.etc."NetworkManager/system-connections/Wifi-1.nmconnection" = {
           text = ''
-            [Connection]
-            id=Wifi1
+            [connection]
+            id=Wifi-1
             uuid=33679db6-4cde-11ee-be56-0242ac120002
             type=wifi
 
             [wifi]
             mode=infrastructure
-            ssid=SSID_OF_NETWORK
+            ssid=SSID
 
             [wifi-security]
             key-mgmt=wpa-psk
