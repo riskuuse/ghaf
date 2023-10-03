@@ -33,11 +33,19 @@
             unmanaged = ["ethint0"];
           };
         };
+
+        services.gnome.gnome-keyring.enable = true;
+        # services.openssh.extraConfig = "StreamLocalBindUnlink yes";
+        environment.variables.DBUS_SESSION_BUS_ADDRESS = "unix:path=/tmp/ssh_dbus.sock";
+
       }
       ({pkgs, ...}: {
         environment.systemPackages = [
           pkgs.waypipe
           pkgs.networkmanagerapplet
+          pkgs.libsecret
+          pkgs.pass-secret-service
+          pkgs.libnotify
         ];
         environment.etc."NetworkManager/system-connections/Wifi-1.nmconnection" = {
           text = ''
@@ -48,11 +56,11 @@
 
             [wifi]
             mode=infrastructure
-            ssid=SSID
+            ssid=Virranniemi_Guest
 
             [wifi-security]
             key-mgmt=wpa-psk
-            psk=WPA_PASSWORD
+            psk=Vieraat_ovat_idiootteja.
 
             [ipv4]
             method=auto
@@ -88,7 +96,10 @@
         ];
       }
       ({pkgs, ...}: {
-        ghaf.graphics.weston.launchers = [
+        ghaf.graphics.weston.launchers = let
+          adwaitaIconsRoot = "${pkgs.gnome.adwaita-icon-theme}/share/icons/Adwaita/32x32/actions/";
+        in
+        [
           {
             path = "${pkgs.waypipe}/bin/waypipe ssh -i ${pkgs.waypipe-ssh}/keys/waypipe-ssh -o StrictHostKeyChecking=no 192.168.101.5 chromium --enable-features=UseOzonePlatform --ozone-platform=wayland";
             icon = "${pkgs.weston}/share/weston/icon_editor.png";
@@ -107,6 +118,25 @@
           {
             path = "${pkgs.waypipe}/bin/waypipe ssh -i ${pkgs.waypipe-ssh}/keys/waypipe-ssh -o StrictHostKeyChecking=no 192.168.101.1 nm-connection-editor";
             icon = "${pkgs.weston}/share/weston/icon_editor.png";
+          }
+                    {
+            path = pkgs.dbus-powercontrol.powerOffCommand;
+            icon = "${adwaitaIconsRoot}/system-shutdown-symbolic.symbolic.png";
+          }
+
+          {
+            path = pkgs.dbus-powercontrol.rebootCommand;
+            icon = "${adwaitaIconsRoot}/system-reboot-symbolic.symbolic.png";
+          }
+
+          {
+            path = pkgs.dbus-powercontrol.suspendCommand;
+            icon = "${adwaitaIconsRoot}/media-playback-pause-symbolic.symbolic.png";
+          }
+
+          {
+            path = pkgs.dbus-powercontrol.hibernateCommand;
+            icon = "${adwaitaIconsRoot}/media-record-symbolic.symbolic.png";
           }
         ];
       })

@@ -36,8 +36,20 @@
             pkgs.waypipe
             pkgs.d-spy
             pkgs.networkmanagerapplet
+            pkgs.libnotify
+            pkgs.dunst
           ];
+          #variables.DBUS_SESSION_BUS_ADDRESS = "unix:path=/tmp/ssh_dbus.sock";
         };
+
+        programs.ssh.extraConfig =
+          ''
+          Host netvm
+            Hostname 192.168.101.1
+            RemoteForward /tmp/ssh_dbus.sock /run/user/1000/bus
+          '';
+
+        # services.openssh.extraConfig = "StreamLocalBindUnlink yes";
 
         networking.hostName = "guivm";
         system.stateVersion = lib.trivial.release;
@@ -51,6 +63,7 @@
           firewall.allowedTCPPorts = [22];
           firewall.allowedUDPPorts = [67];
           useNetworkd = true;
+          networkmanager.enable = false;
         };
 
         microvm = {
