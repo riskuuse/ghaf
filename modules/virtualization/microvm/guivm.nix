@@ -36,10 +36,10 @@
             pkgs.waypipe
             pkgs.d-spy
             pkgs.networkmanagerapplet
-            pkgs.libnotify
-            pkgs.dunst
+            #pkgs.libnotify
+            #pkgs.mate.mate-notification-daemon
           ];
-          #variables.DBUS_SESSION_BUS_ADDRESS = "unix:path=/tmp/ssh_dbus.sock";
+          variables.DBUS_SESSION_BUS_ADDRESS = "unix:path=/tmp/ssh_dbus.sock";
         };
 
         programs.ssh.extraConfig =
@@ -63,7 +63,10 @@
           firewall.allowedTCPPorts = [22];
           firewall.allowedUDPPorts = [67];
           useNetworkd = true;
-          networkmanager.enable = false;
+          networkmanager = {
+            enable = false;
+            unmanaged = ["ethint0"];
+          };
         };
 
         microvm = {

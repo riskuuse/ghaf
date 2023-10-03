@@ -43,9 +43,9 @@
         environment.systemPackages = [
           pkgs.waypipe
           pkgs.networkmanagerapplet
-          pkgs.libsecret
-          pkgs.pass-secret-service
-          pkgs.libnotify
+          #pkgs.libsecret
+          #pkgs.pass-secret-service
+          #pkgs.libnotify
         ];
         environment.etc."NetworkManager/system-connections/Wifi-1.nmconnection" = {
           text = ''
