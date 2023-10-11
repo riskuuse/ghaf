@@ -39,17 +39,17 @@
             #pkgs.libnotify
             #pkgs.mate.mate-notification-daemon
           ];
-          variables.DBUS_SESSION_BUS_ADDRESS = "unix:path=/tmp/ssh_dbus.sock";
+          # variables.DBUS_SESSION_BUS_ADDRESS = "unix:path=/tmp/ssh_guivm_dbus.sock";
         };
 
-        programs.ssh.extraConfig =
-          ''
+        programs.ssh.extraConfig = ''
           Host netvm
             Hostname 192.168.101.1
-            RemoteForward /tmp/ssh_dbus.sock /run/user/1000/bus
-          '';
+            RemoteForward /tmp/ssh_netvm_dbus.sock /run/user/1000/bus
+            # LocalForward /run/user/1000/bus /tmp/ssh_guivm_dbus.sock 
+        '';
 
-        # services.openssh.extraConfig = "StreamLocalBindUnlink yes";
+        services.openssh.extraConfig = "StreamLocalBindUnlink yes";
 
         networking.hostName = "guivm";
         system.stateVersion = lib.trivial.release;
@@ -59,6 +59,7 @@
 
         networking = {
           enableIPv6 = false;
+          # wireless.dbusControlled = true;
           interfaces.ethint0.useDHCP = false;
           firewall.allowedTCPPorts = [22];
           firewall.allowedUDPPorts = [67];

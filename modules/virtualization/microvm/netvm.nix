@@ -24,13 +24,6 @@
 
         users.users.${configHost.ghaf.users.accounts.user}.openssh.authorizedKeys.keyFiles = ["${waypipe-ssh}/keys/waypipe-ssh.pub"];
 
-        programs.ssh.extraConfig =
-          ''
-          Host guivm
-            Hostname 192.168.101.3
-            RemoteForward /tmp/ssh_dbus.sock /run/user/1000/bus
-          '';
-
         networking.hostName = "netvm";
         system.stateVersion = lib.trivial.release;
 

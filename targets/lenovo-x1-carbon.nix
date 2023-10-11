@@ -34,9 +34,15 @@
           };
         };
 
-        services.gnome.gnome-keyring.enable = true;
-        # services.openssh.extraConfig = "StreamLocalBindUnlink yes";
-        environment.variables.DBUS_SESSION_BUS_ADDRESS = "unix:path=/tmp/ssh_dbus.sock";
+        programs.ssh.extraConfig = ''
+          Host guivm
+            Hostname 192.168.101.3
+            RemoteForward /tmp/ssh_guivm_dbus.sock /run/user/1000/bus
+        '';
+
+#        services.gnome.gnome-keyring.enable = true;
+        services.openssh.extraConfig = "StreamLocalBindUnlink yes";
+        environment.variables.DBUS_SESSION_BUS_ADDRESS = "unix:path=/tmp/ssh_netvm_dbus.sock";
 
       }
       ({pkgs, ...}: {
@@ -56,11 +62,11 @@
 
             [wifi]
             mode=infrastructure
-            ssid=Virranniemi_Guest
+            ssid=SSID
 
             [wifi-security]
             key-mgmt=wpa-psk
-            psk=Vieraat_ovat_idiootteja.
+            psk=PASSWORD
 
             [ipv4]
             method=auto
