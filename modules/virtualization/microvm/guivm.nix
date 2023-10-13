@@ -34,7 +34,8 @@
           };
           systemPackages = [
             pkgs.waypipe
-            pkgs.d-spy
+            # pkgs.d-spy
+            pkgs.bustle
             pkgs.networkmanagerapplet
             #pkgs.libnotify
             #pkgs.mate.mate-notification-daemon

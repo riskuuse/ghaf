@@ -26,12 +26,12 @@
         hardware.enableRedistributableFirmware = true;
 
         networking = {
-          wireless.enable = false;
+          # wireless.enable = false;
           wireless.dbusControlled = true;
-          networkmanager = {
-            enable = true;
-            unmanaged = ["ethint0"];
-          };
+          # networkmanager = {
+          #  enable = true;
+          #  unmanaged = ["ethint0"];
+          #};
         };
 
         programs.ssh.extraConfig = ''
@@ -40,19 +40,27 @@
             RemoteForward /tmp/ssh_guivm_dbus.sock /run/user/1000/bus
         '';
 
-#        services.gnome.gnome-keyring.enable = true;
-        services.openssh.extraConfig = "StreamLocalBindUnlink yes";
-        environment.variables.DBUS_SESSION_BUS_ADDRESS = "unix:path=/tmp/ssh_netvm_dbus.sock";
+        services.connman = {
+          enable = true;
+          wifi.backend = "wpa_supplicant";
+          # package = pkgs.connman;
+        };
+        # services.gnome.gnome-keyring.enable = true;
+        # services.openssh.extraConfig = "StreamLocalBindUnlink yes";
+        # environment.variables.DBUS_SESSION_BUS_ADDRESS = "unix:path=/tmp/ssh_netvm_dbus.sock";
 
       }
       ({pkgs, ...}: {
         environment.systemPackages = [
           pkgs.waypipe
-          pkgs.networkmanagerapplet
-          #pkgs.libsecret
-          #pkgs.pass-secret-service
-          #pkgs.libnotify
+          pkgs.connman-gtk
+          pkgs.connman-ncurses
+          # pkgs.networkmanagerapplet
+          # pkgs.libsecret
+          # pkgs.pass-secret-service
+          # pkgs.libnotify
         ];
+        /*
         environment.etc."NetworkManager/system-connections/Wifi-1.nmconnection" = {
           text = ''
             [connection]
@@ -62,11 +70,11 @@
 
             [wifi]
             mode=infrastructure
-            ssid=SSID
+            ssid=Virranniemi_Guest
 
             [wifi-security]
             key-mgmt=wpa-psk
-            psk=PASSWORD
+            psk=Vieraat_ovat_idiootteja.
 
             [ipv4]
             method=auto
@@ -78,6 +86,7 @@
           '';
           mode = "0600";
         };
+        */
       })
     ];
     guivmExtraModules = [
@@ -122,7 +131,7 @@
           }
 
           {
-            path = "${pkgs.waypipe}/bin/waypipe ssh -i ${pkgs.waypipe-ssh}/keys/waypipe-ssh -o StrictHostKeyChecking=no 192.168.101.1 nm-connection-editor";
+            path = "${pkgs.waypipe}/bin/waypipe ssh -i ${pkgs.waypipe-ssh}/keys/waypipe-ssh -o StrictHostKeyChecking=no 192.168.101.1 connman-gtk";
             icon = "${pkgs.weston}/share/weston/icon_editor.png";
           }
                     {
