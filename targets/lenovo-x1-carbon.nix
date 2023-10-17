@@ -37,12 +37,13 @@
         programs.ssh.extraConfig = ''
           Host guivm
             Hostname 192.168.101.3
-            RemoteForward /tmp/ssh_guivm_dbus.sock /run/user/1000/bus
+            LocalForward /tmp/ssh_netvm_dbus.sock /run/user/1000/bus
         '';
 
 #        services.gnome.gnome-keyring.enable = true;
         services.openssh.extraConfig = "StreamLocalBindUnlink yes";
-        environment.variables.DBUS_SESSION_BUS_ADDRESS = "unix:path=/tmp/ssh_netvm_dbus.sock";
+        # environment.variables.DBUS_SESSION_BUS_ADDRESS = "unix:path=/tmp/ssh_netvm_dbus.sock";
+        # environment.variables.DBUS_SYSTEM_BUS_ADDRESS = "unix:path=/tmp/ssh_netvm_system_bus_socket";
 
       }
       ({pkgs, ...}: {
@@ -62,11 +63,11 @@
 
             [wifi]
             mode=infrastructure
-            ssid=SSID
+            ssid=Virranniemi_Guest
 
             [wifi-security]
             key-mgmt=wpa-psk
-            psk=PASSWORD
+            psk=Vieraat_ovat_idiootteja.
 
             [ipv4]
             method=auto
