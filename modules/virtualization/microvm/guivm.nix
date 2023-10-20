@@ -34,7 +34,7 @@
           };
           systemPackages = [
             pkgs.waypipe
-            pkgs.d-spy
+#            pkgs.d-spy
             pkgs.networkmanagerapplet
             #pkgs.libnotify
             #pkgs.mate.mate-notification-daemon
@@ -49,14 +49,17 @@
             # RemoteForward /tmp/ssh_netvm_system_bus_socket /run/dbus/system_bus_socket
             LocalForward /tmp/ssh_guivm_dbus.sock /run/user/1000/bus
             LocalForward /tmp/ssh_guivm_system_bus_socket /run/dbus/system_bus_socket
+            StreamLocalBindUnlink yes
 
-          Host netvm_root
-            Hostname 192.168.101.1
-            User root
-            LocalForward /tmp/ssh_guivm_systemdbus.sock /run/dbus/system_bus_socket
+ #         Host netvm_root
+ #           Hostname 192.168.101.1
+ #           User root
+ #           LocalForward /tmp/ssh_guivm_systemdbus.sock /run/dbus/system_bus_socket
 
           Host host
             Hostname 192.168.101.2
+
+          StreamLocalBindUnlink yes
         '';
 
         services.openssh.extraConfig = "StreamLocalBindUnlink yes";

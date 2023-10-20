@@ -34,11 +34,11 @@
           };
         };
 
-        programs.ssh.extraConfig = ''
-          Host guivm
-            Hostname 192.168.101.3
-            LocalForward /tmp/ssh_netvm_dbus.sock /run/user/1000/bus
-        '';
+#        programs.ssh.extraConfig = ''
+#          Host guivm
+#            Hostname 192.168.101.3
+#            LocalForward /tmp/ssh_netvm_dbus.sock /run/user/1000/bus
+#        '';
 
 #        services.gnome.gnome-keyring.enable = true;
         services.openssh.extraConfig = "StreamLocalBindUnlink yes";
@@ -49,7 +49,7 @@
       ({pkgs, ...}: {
         environment.systemPackages = [
           pkgs.waypipe
-          pkgs.networkmanagerapplet
+#          pkgs.networkmanagerapplet
           #pkgs.libsecret
           #pkgs.pass-secret-service
           #pkgs.libnotify
