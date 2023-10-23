@@ -34,25 +34,10 @@
           };
         };
 
-#        programs.ssh.extraConfig = ''
-#          Host guivm
-#            Hostname 192.168.101.3
-#            LocalForward /tmp/ssh_netvm_dbus.sock /run/user/1000/bus
-#        '';
-
-#        services.gnome.gnome-keyring.enable = true;
-        services.openssh.extraConfig = "StreamLocalBindUnlink yes";
-        # environment.variables.DBUS_SESSION_BUS_ADDRESS = "unix:path=/tmp/ssh_netvm_dbus.sock";
-        # environment.variables.DBUS_SYSTEM_BUS_ADDRESS = "unix:path=/tmp/ssh_netvm_system_bus_socket";
-
       }
       ({pkgs, ...}: {
         environment.systemPackages = [
           pkgs.waypipe
-#          pkgs.networkmanagerapplet
-          #pkgs.libsecret
-          #pkgs.pass-secret-service
-          #pkgs.libnotify
         ];
         environment.etc."NetworkManager/system-connections/Wifi-1.nmconnection" = {
           text = ''
@@ -120,30 +105,6 @@
           {
             path = "${pkgs.waypipe}/bin/waypipe ssh -i ${pkgs.waypipe-ssh}/keys/waypipe-ssh -o StrictHostKeyChecking=no 192.168.101.7 zathura";
             icon = "${pkgs.weston}/share/weston/icon_editor.png";
-          }
-
-          {
-            path = "${pkgs.waypipe}/bin/waypipe ssh -i ${pkgs.waypipe-ssh}/keys/waypipe-ssh -o StrictHostKeyChecking=no 192.168.101.1 nm-connection-editor";
-            icon = "${pkgs.weston}/share/weston/icon_editor.png";
-          }
-                    {
-            path = pkgs.dbus-powercontrol.powerOffCommand;
-            icon = "${adwaitaIconsRoot}/system-shutdown-symbolic.symbolic.png";
-          }
-
-          {
-            path = pkgs.dbus-powercontrol.rebootCommand;
-            icon = "${adwaitaIconsRoot}/system-reboot-symbolic.symbolic.png";
-          }
-
-          {
-            path = pkgs.dbus-powercontrol.suspendCommand;
-            icon = "${adwaitaIconsRoot}/media-playback-pause-symbolic.symbolic.png";
-          }
-
-          {
-            path = pkgs.dbus-powercontrol.hibernateCommand;
-            icon = "${adwaitaIconsRoot}/media-record-symbolic.symbolic.png";
           }
         ];
       })
