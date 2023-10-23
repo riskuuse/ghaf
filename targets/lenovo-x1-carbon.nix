@@ -48,11 +48,11 @@
 
             [wifi]
             mode=infrastructure
-            ssid=Virranniemi_Guest
+            ssid=SSID
 
             [wifi-security]
             key-mgmt=wpa-psk
-            psk=Vieraat_ovat_idiootteja.
+            psk=PASSWORD
 
             [ipv4]
             method=auto
