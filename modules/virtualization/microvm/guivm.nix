@@ -35,9 +35,10 @@
           systemPackages = [
             pkgs.waypipe
             pkgs.networkmanagerapplet
+            pkgs.nm-launcher
           ];
-          variables.DBUS_SESSION_BUS_ADDRESS = "unix:path=/tmp/ssh_guivm_dbus.sock";
-          variables.DBUS_SYSTEM_BUS_ADDRESS = "unix:path=/tmp/ssh_guivm_system_bus_socket";
+          #variables.DBUS_SESSION_BUS_ADDRESS = "unix:path=/tmp/ssh_guivm_dbus.sock";
+          #variables.DBUS_SYSTEM_BUS_ADDRESS = "unix:path=/tmp/ssh_guivm_system_bus_socket";
         };
 
         programs.ssh.extraConfig = ''

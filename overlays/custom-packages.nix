@@ -22,6 +22,7 @@
       dbus-powercontrol = final.callPackage ../user-apps/dbus-powercontrol {};
       gala-app = final.callPackage ../user-apps/gala {};
       waypipe-ssh = final.callPackage ../user-apps/waypipe-ssh {};
+      nm-launcher = final.callPackage ../user-apps/nm-launcher {};
       # TODO: Remove this override if/when the fix is upstreamed.
       # Disabling colord dependency for weston. Colord has argyllcms as
       # a dependency, and this package is not cross-compilable.
