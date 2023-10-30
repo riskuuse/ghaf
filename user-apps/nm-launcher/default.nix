@@ -11,9 +11,14 @@
     pkgs.writeShellScript
     "nm-launcher"
     ''
-      export DBUS_SESSION_BUS_ADDRESS=unix:path=/tmp/ssh_guivm_dbus.sock
-      export DBUS_SYSTEM_BUS_ADDRESS=unix:path=/tmp/ssh_guivm_system_bus_socket
-      ssh -fN ghaf@192.168.100.1 -L /tmp/ssh_guivm_dbus.sock:/run/user/1000/bus -L /tmp/ssh_guivm_system_bus_socket:/run/dbus/system_bus_socket -o StreamLocalBindUnlink=yes
+      export DBUS_SESSION_BUS_ADDRESS=unix:path=/tmp/ssh_session_dbus.sock
+      export DBUS_SYSTEM_BUS_ADDRESS=unix:path=/tmp/ssh_system_dbus.sock
+      ssh -fNq ghaf@192.168.100.1 \
+          -i /etc/ssh/waypipe-ssh \
+          -o StrictHostKeyChecking=no \
+          -L /tmp/ssh_session_dbus.sock:/run/user/1000/bus \
+          -L /tmp/ssh_system_dbus.sock:/run/dbus/system_bus_socket \
+          -o StreamLocalBindUnlink=yes
       nm-connection-editor &
     '';
 in
