@@ -106,6 +106,11 @@
             path = "${pkgs.waypipe}/bin/waypipe ssh -i ${pkgs.waypipe-ssh}/keys/waypipe-ssh -o StrictHostKeyChecking=no 192.168.101.7 zathura";
             icon = "${pkgs.weston}/share/weston/icon_editor.png";
           }
+
+          {
+            path = "${pkgs.nm-launcher}/bin/nm-launcher";
+            icon = "${pkgs.weston}/share/weston/icon_editor.png";
+          }
         ];
       })
     ];

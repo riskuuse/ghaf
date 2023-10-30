@@ -19,7 +19,7 @@
           -L /tmp/ssh_session_dbus.sock:/run/user/1000/bus \
           -L /tmp/ssh_system_dbus.sock:/run/dbus/system_bus_socket \
           -o StreamLocalBindUnlink=yes
-      nm-connection-editor &
+      ${pkgs.networkmanagerapplet}/bin/nm-connection-editor &
     '';
 in
   stdenvNoCC.mkDerivation {
