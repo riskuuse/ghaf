@@ -109,6 +109,8 @@
           authorizedKeysCommand = "/etc/ssh/get-auth-keys";
           authorizedKeysCommandUser = "nobody";
         };
+
+        time.timeZone = "Asia/Dubai";
       })
     ];
     guivmConfig = hostConfiguration.config.ghaf.virtualization.microvm.guivm;
@@ -160,6 +162,8 @@
             icon = "${pkgs.networkmanagerapplet}/share/icons/hicolor/22x22/apps/nm-device-wwan.png";
           }
         ];
+
+        time.timeZone = "Asia/Dubai";
       })
     ];
     hostConfiguration = lib.nixosSystem {
@@ -284,6 +288,8 @@
                         hardware.pulseaudio.enable = true;
                         users.extraUsers.ghaf.extraGroups = ["audio"];
 
+                        time.timeZone = "Asia/Dubai";
+
                         microvm.qemu.extraArgs = [
                           # Lenovo X1 integrated usb webcam
                           "-device"
@@ -309,6 +315,11 @@
                     macAddress = "02:00:00:03:06:01";
                     ramMb = 1536;
                     cores = 2;
+                    extraModules = [
+                      {
+                        time.timeZone = "Asia/Dubai";
+                      }
+                    ];
                   }
                   {
                     name = "zathura";
@@ -316,6 +327,11 @@
                     macAddress = "02:00:00:03:07:01";
                     ramMb = 512;
                     cores = 1;
+                    extraModules = [
+                      {
+                        time.timeZone = "Asia/Dubai";
+                      }
+                    ];
                   }
                 ];
               };
