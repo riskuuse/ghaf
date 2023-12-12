@@ -51,10 +51,17 @@
             dhcp-authoritative = true;
             domain = "ghaf";
             listen-address = ["127.0.0.1,192.168.100.1"];
-            dhcp-option = [
-              "option:router,192.168.100.1"
-              "6,192.168.100.1"
-            ];
+
+            dhcp-option =
+              if config.ghaf.virtualization.microvm.idsvm.enable
+              then [
+                "option:router,192.168.100.3" # set IDS-VM as a default gw
+                "option:dns-server,192.168.100.1"
+              ]
+              else [
+                "option:router,192.168.100.1" # set NetVM as a default gw
+                "option:dns-server,192.168.100.1"
+              ];
             expand-hosts = true;
             domain-needed = true;
             bogus-priv = true;

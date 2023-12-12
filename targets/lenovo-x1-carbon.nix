@@ -66,6 +66,8 @@
           mode = "0600";
         };
 
+        # services.dnsmasq.settings.dhcp-option = ["option:router,192.168.100.3"];  # set ids-vm as a default gw
+
         # Waypipe-ssh key is used here to create keys for ssh tunneling to forward D-Bus sockets.
         # SSH is very picky about to file permissions and ownership and will
         # accept neither direct path inside /nix/store or symlink that points
@@ -124,7 +126,10 @@
       ({pkgs, ...}: {
         ghaf.graphics.weston.launchers = [
           {
-            path = "${pkgs.openssh}/bin/ssh -i /run/waypipe-ssh/id_ed25519 -o StrictHostKeyChecking=no chromium-vm.ghaf ${pkgs.waypipe}/bin/waypipe --border \"#ff5733,5\" --vsock -s ${toString guivmConfig.waypipePort} server chromium --enable-features=UseOzonePlatform --ozone-platform=wayland";
+            # The SPKI fingerprint is calculated like this:
+            # $ openssl x509 -noout -in mitmproxy-ca-cert.pem -pubkey | openssl asn1parse -noout -inform pem -out public.key
+            # $ openssl dgst -sha256 -binary public.key | openssl enc -base64
+            path = "${pkgs.openssh}/bin/ssh -i /run/waypipe-ssh/id_ed25519 -o StrictHostKeyChecking=no chromium-vm.ghaf ${pkgs.waypipe}/bin/waypipe --border \"#ff5733,5\" --vsock -s ${toString guivmConfig.waypipePort} server chromium --enable-features=UseOzonePlatform --ozone-platform=wayland --user-data-dir=~/.config/chromium/Default --ignore-certificate-errors-spki-list=Bq49YmAq1CG6FuBzp8nsyRXumW7Dmkp7QQ/F82azxGU=";
             icon = "${../assets/icons/png/browser.png}";
           }
 
@@ -160,6 +165,7 @@
           ../modules/host
           ../modules/virtualization/microvm/microvm-host.nix
           ../modules/virtualization/microvm/netvm.nix
+          ../modules/virtualization/microvm/idsvm.nix
           ../modules/virtualization/microvm/guivm.nix
           ../modules/virtualization/microvm/appvm.nix
           ({pkgs, ...}: {
@@ -202,6 +208,10 @@
               virtualization.microvm.netvm = {
                 enable = true;
                 extraModules = netvmExtraModules;
+              };
+              virtualization.microvm.idsvm = {
+                enable = true;
+                # extraModules = idsvmExtraModules;
               };
               virtualization.microvm.guivm = {
                 enable = true;
