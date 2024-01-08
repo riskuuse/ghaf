@@ -3,6 +3,9 @@
 _: let
   domain = "ghaf";
 in {
+  # Disable resolved since we are using Dnsmasq
+  services.resolved.enable = false;
+
   # Dnsmasq is used as a DHCP/DNS server inside the NetVM
   services.dnsmasq = {
     enable = true;
@@ -18,14 +21,14 @@ in {
       listen-address = ["127.0.0.1,192.168.100.1"];
       dhcp-option = [
         "option:router,192.168.100.1"
-        "6,192.168.100.1"
+        "option:dns-server,192.168.100.1"
       ];
       expand-hosts = true;
-      domain-needed = false;
+      domain-needed = true;
       bogus-priv = true;
 
       # static IP addresses for the guests
-      dhcp-host = "02:00:00:02:02:02,192.168.101.3,gui-vm";
+      dhcp-host = "02:00:00:02:02:02,192.168.100.3,gui-vm";
     };
   };
 }
