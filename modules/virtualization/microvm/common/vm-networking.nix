@@ -11,7 +11,7 @@ in {
     hostName = vmName;
     enableIPv6 = false;
     firewall.allowedTCPPorts = [22];
-    firewall.allowedUDPPorts = [67];
+    firewall.allowedUDPPorts = [67 51820];
     useNetworkd = true;
     nat = {
       enable = true;

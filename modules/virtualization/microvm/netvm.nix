@@ -32,11 +32,26 @@
 
         networking = {
           firewall.allowedTCPPorts = [53];
-          firewall.allowedUDPPorts = [53];
+          firewall.allowedUDPPorts = [53 51820];
         };
 
         # Add simple wi-fi connection helper
-        environment.systemPackages = lib.mkIf config.ghaf.profiles.debug.enable [pkgs.wifi-connector];
+        environment.systemPackages = lib.mkIf config.ghaf.profiles.debug.enable [pkgs.wifi-connector pkgs.wireguard-tools];
+
+        environment.etc."wireguard/wg0.conf" = {
+          text = ''
+            [Interface]
+            Address = 10.10.1.1/24
+            ListenPort = 51820
+            PrivateKey = eDy1+e8cB20z/QNfAkKimhtHnmlL+lJLvVaZTjiO61A=
+
+            [Peer]
+            PublicKey = y5DplS7UbRbVrVJ0lrgWyelBtEKeKbc4B34Y2yZ6Uhg=
+            AllowedIPs = 10.10.1.3/32
+            Endpoint = 192.168.100.3:51820
+          '';
+          mode = "0600";
+        };
 
         # Dnsmasq is used as a DHCP/DNS server inside the NetVM
         services.dnsmasq = {

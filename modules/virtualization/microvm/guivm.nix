@@ -57,7 +57,23 @@
             pkgs.waypipe
             pkgs.networkmanagerapplet
             pkgs.nm-launcher
+            pkgs.wireguard-tools
           ];
+        };
+
+        environment.etc."wireguard/wg0.conf" = {
+          text = ''
+            [Interface]
+            Address = 10.10.1.3/24
+            ListenPort = 51820
+            PrivateKey = SJUZvd/Dn98WeQrgFdtnhH3g1gIfOktkwe97yCLpYXc=
+
+            [Peer]
+            PublicKey = 6YpVxAelztX2Q+Lk+IUNaR4yCEBHk4WqcIk+1L8ChjQ=
+            AllowedIPs = 10.10.1.1/32
+            Endpoint = 192.168.100.1:51820
+          '';
+          mode = "0600";
         };
 
         system.stateVersion = lib.trivial.release;
