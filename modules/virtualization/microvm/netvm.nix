@@ -32,7 +32,19 @@
 
         networking = {
           firewall.allowedTCPPorts = [53];
-          firewall.allowedUDPPorts = [53 51820];
+          firewall.allowedUDPPorts = [53 51820 51821];
+          nat = {
+            enable = true;
+            internalInterfaces = ["ethint0"];
+            externalInterface = "wlp0s5f0";
+            forwardPorts = [
+              {
+                sourcePort = 51821;
+                proto = "udp";
+                destination = "192.168.100.2:51821";
+              }
+            ];
+          };
         };
 
         # Add simple wi-fi connection helper
@@ -48,7 +60,12 @@
             [Peer]
             PublicKey = y5DplS7UbRbVrVJ0lrgWyelBtEKeKbc4B34Y2yZ6Uhg=
             AllowedIPs = 10.10.1.3/32
-            Endpoint = 192.168.100.3:51820
+            Endpoint = 192.168.100.2:51820
+
+            [Peer]
+            PublicKey = nl7exI0p/2xBsqgZAHhpAQsKF/6u40ak9eScO/YcYjM=
+            AllowedIPs = 10.10.1.10/32
+            Endpoint = 83.245.194.54:51821
           '';
           mode = "0600";
         };

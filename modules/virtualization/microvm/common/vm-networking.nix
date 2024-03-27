@@ -11,12 +11,22 @@ in {
     hostName = vmName;
     enableIPv6 = false;
     firewall.allowedTCPPorts = [22];
-    firewall.allowedUDPPorts = [67 51820];
+    firewall.allowedUDPPorts = [67];
     useNetworkd = true;
+    /*
     nat = {
       enable = true;
       internalInterfaces = [networkName];
+      externalInterface = "wg0";
+      forwardPorts = [
+        {
+          sourcePort = 51821;
+          proto = "udp";
+          destination = "192.168.100.2";
+        }
+      ];
     };
+    */
   };
 
   microvm.interfaces = [

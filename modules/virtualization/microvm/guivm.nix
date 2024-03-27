@@ -58,6 +58,7 @@
             pkgs.networkmanagerapplet
             pkgs.nm-launcher
             pkgs.wireguard-tools
+            pkgs.tcpdump
           ];
         };
 
@@ -65,15 +66,29 @@
           text = ''
             [Interface]
             Address = 10.10.1.3/24
-            ListenPort = 51820
+            ListenPort = 51821
             PrivateKey = SJUZvd/Dn98WeQrgFdtnhH3g1gIfOktkwe97yCLpYXc=
 
             [Peer]
             PublicKey = 6YpVxAelztX2Q+Lk+IUNaR4yCEBHk4WqcIk+1L8ChjQ=
             AllowedIPs = 10.10.1.1/32
             Endpoint = 192.168.100.1:51820
+
+            [Peer]
+            PublicKey = nl7exI0p/2xBsqgZAHhpAQsKF/6u40ak9eScO/YcYjM=
+            AllowedIPs = 10.10.1.10/32
+            Endpoint = 83.245.194.54:51822
           '';
           mode = "0600";
+        };
+
+        networking = {
+          firewall.allowedUDPPorts = [53 67 51820 51821 51822];
+          firewall.allowedTCPPorts = [53];
+          nat = {
+            enable = true;
+            internalInterfaces = ["ethint0"];
+          };
         };
 
         system.stateVersion = lib.trivial.release;
