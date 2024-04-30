@@ -37,7 +37,7 @@
 
         networking = {
           firewall.allowedTCPPorts = [53];
-          firewall.allowedUDPPorts = [53];
+          firewall.allowedUDPPorts = [53 51820];
         };
 
         # Add simple wi-fi connection helper

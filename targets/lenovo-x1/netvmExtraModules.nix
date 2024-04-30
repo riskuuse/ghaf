@@ -42,6 +42,48 @@
         unmanaged = ["ethint0"];
       };
     };
+
+    systemd.network.netdevs."10-wg0" = {
+      netdevConfig = {
+        Kind = "wireguard";
+        Name = "wg0";
+        MTUBytes = "1300";
+      };
+      wireguardConfig = {
+        PrivateKeyFile = "/etc/wireguard/keys/privkey";
+        ListenPort = 51820;
+      };
+      wireguardPeers = [
+        {
+          wireguardPeerConfig = {
+            PublicKey = "0aiBhtnOPvS/qxh0rQ7nEw6orlOjA1B/7xIQepi11Xs=";
+            AllowedIPs = ["10.10.10.0"];
+            Endpoint = "20.240.232.56:51820";
+          };
+        }
+      ];
+    };
+    systemd.network.networks.wg0 = {
+      matchConfig.Name = "wg0";
+      address = ["10.10.10.1/32"];
+      # DHCP = "no";
+      #gateway = ["10.10.10.0"];
+      # gatewayOnLink = true;
+      networkConfig = {
+        # IPMasquerade = "ipv4";
+        # IPForward = true;
+      };
+      routes = [
+        {routeConfig = {Gateway = "10.10.10.1"; Destination = "10.10.10.0/24"; }; }
+      ];
+    };
+    environment.etc."wireguard/keys/privkey" = {
+      text = ''
+        ADD PRIVATE KEY HERE
+      '';
+      mode = "0644";
+    };
+
     # noXlibs=false; needed for NetworkManager stuff
     environment.noXlibs = false;
     environment.etc."NetworkManager/system-connections/Wifi-1.nmconnection" = {
@@ -74,7 +116,7 @@
       config = configH;
     };
     # Add simple wi-fi connection helper
-    environment.systemPackages = lib.mkIf configH.ghaf.profiles.debug.enable [pkgs.wifi-connector-nmcli];
+    environment.systemPackages = lib.mkIf configH.ghaf.profiles.debug.enable [pkgs.wifi-connector-nmcli pkgs.wireguard-tools pkgs.tcpdump];
 
     services.openssh = configH.ghaf.security.sshKeys.sshAuthorizedKeysCommand;
 
