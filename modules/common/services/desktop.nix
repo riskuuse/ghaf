@@ -65,6 +65,12 @@ in
               path = "${pkgs.givc-cli}/bin/givc-cli ${cliArgs} start --vm business-vm chromium";
               icon = "${pkgs.icon-pack}/thorium-browser.svg";
             }
+
+            {
+              name = "Wireguard for ChromiumVM";
+              path = "${pkgs.openssh}/bin/ssh -i ${privateSshKeyPath} -o StrictHostKeyChecking=no chromium-vm run-waypipe wireguard-gui --enable-features=UseOzonePlatform --ozone-platform=wayland";
+              icon = "${pkgs.icon-pack}/preferences-system-network.svg";
+            }
             # TODO must enable the waypipe to support more than one app in a VM
             {
               name = "VPN";

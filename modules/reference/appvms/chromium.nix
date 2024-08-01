@@ -36,6 +36,7 @@ in
       pkgs.xdg-utils
       xdgPdfItem
       xdgOpenPdf
+      pkgs.wireguard-gui
     ];
   # TODO create a repository of mac addresses to avoid conflicts
   macAddress = "02:00:00:03:05:01";

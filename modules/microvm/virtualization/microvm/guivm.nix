@@ -112,6 +112,7 @@ let
               ++ [
                 pkgs.nm-launcher
                 pkgs.pamixer
+                pkgs.wireguard-gui
               ]
               ++ (lib.optional (
                 config.ghaf.profiles.debug.enable && config.ghaf.virtualization.microvm.idsvm.mitmproxy.enable
@@ -121,6 +122,15 @@ let
                 pkgs.glxinfo
                 pkgs.libva-utils
               ];
+          };
+          environment.etc."wireguard/wg0.conf" = {
+            text = ''
+              [Interface]
+              Address = 10.10.10.5/24
+              ListenPort = 51820
+              PrivateKey = WIREGUARD_PRIVATE_KEY
+            '';
+            mode = "0600";
           };
 
           time.timeZone = config.time.timeZone;

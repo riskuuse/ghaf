@@ -517,6 +517,7 @@
         "pre-commit-hooks-nix": "pre-commit-hooks-nix",
         "systems": "systems",
         "treefmt-nix": "treefmt-nix"
+        "wireguard-gui": "wireguard-gui"
       }
     },
     "rust-analyzer-src": {
@@ -609,6 +610,26 @@
       "original": {
         "owner": "numtide",
         "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "wireguard-gui": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1721986761,
+        "narHash": "sha256-XS4zYzG6KghvyJUPeO53o6HAo6Upo8cHpw8f38UcKxo=",
+        "owner": "remimimimimi",
+        "repo": "wireguard-gui",
+        "rev": "e1f17f284f8ac5789e569acb399ec30ad8f08268",
+        "type": "github"
+      },
+      "original": {
+        "owner": "remimimimimi",
+        "repo": "wireguard-gui",
         "type": "github"
       }
     }
