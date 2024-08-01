@@ -76,10 +76,26 @@
             ++ [
               pkgs.nm-launcher
               pkgs.pamixer
+              pkgs.wireguard-gui
             ]
             ++ (lib.optional (config.ghaf.profiles.debug.enable && config.ghaf.virtualization.microvm.idsvm.mitmproxy.enable) pkgs.mitmweb-ui);
         };
-
+        environment.etc."wireguard/wg0.conf" = {
+          text = ''
+            [Interface]
+            Address = 10.10.10.5/24
+            ListenPort = 51820
+            PrivateKey = WIREGUARD_PRIVATE_KEY
+          '';
+          mode = "0777"; # Should be "0600"
+        };
+        #environment.etc."modprobe.d/nvidia.conf" = {
+        #  text = ''
+        #    options nvidia_drm modeset=1
+        #    options nvidia_drm fbdev=1
+        #    '';
+        #};
+ 
         time.timeZone = config.time.timeZone;
         system.stateVersion = lib.trivial.release;
 

@@ -25,6 +25,11 @@
   };
 
   inputs = {
+    wireguard-gui = {
+      url = "github:remimimimimi/wireguard-gui";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     #TODO: clean this up before merging to main
     nixpkgs.url = "github:tiiuae/nixpkgs/nixos-unstable-xdg-ffado-2"; #"flake:mylocalnixpkgs"; #
     #nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
