@@ -68,9 +68,10 @@ in
 
             {
               name = "Wireguard for ChromiumVM";
-              path = "${pkgs.openssh}/bin/ssh -i ${privateSshKeyPath} -o StrictHostKeyChecking=no chromium-vm run-waypipe wireguard-gui --enable-features=UseOzonePlatform --ozone-platform=wayland";
+              path = "${pkgs.openssh}/bin/ssh -i ${privateSshKeyPath} -o StrictHostKeyChecking=no chromium-vm run-waypipe wireguard-gui";
               icon = "${pkgs.icon-pack}/preferences-system-network.svg";
             }
+
             # TODO must enable the waypipe to support more than one app in a VM
             {
               name = "VPN";
