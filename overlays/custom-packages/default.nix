@@ -5,7 +5,6 @@
 # packages.
 #
 (final: prev: {
-  wireguard-gui = final.callPackage ../../packages/wireguard-gui {};
   gala-app = final.callPackage ../../packages/gala { };
   element-desktop = import ./element-desktop { inherit prev; };
   element-gps = final.callPackage ../../packages/element-gps { };
@@ -20,4 +19,6 @@
   mitmweb-ui = final.callPackage ../../packages/mitmweb-ui { };
   gtklock = import ./gtklock { inherit prev; };
   hardware-scan = final.callPackage ../../packages/hardware-scan { };
+  wireguard-gui = final.callPackage ../../packages/wireguard-gui {};
+  wireguard-gui-launcher = final.callPackage ../../packages/wireguard-gui-launcher {};
 })

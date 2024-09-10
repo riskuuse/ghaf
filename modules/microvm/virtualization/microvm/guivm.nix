@@ -60,6 +60,7 @@ let
               withTimesyncd = true;
               withDebug = config.ghaf.profiles.debug.enable;
               withHardenedConfigs = true;
+              withPolkit = true;
             };
             givc.guivm.enable = true;
             # Logging client configuration
@@ -113,6 +114,8 @@ let
                 pkgs.nm-launcher
                 pkgs.pamixer
                 pkgs.wireguard-gui
+                pkgs.wireguard-tools
+                pkgs.polkit_gnome
               ]
               ++ (lib.optional (
                 config.ghaf.profiles.debug.enable && config.ghaf.virtualization.microvm.idsvm.mitmproxy.enable
@@ -129,6 +132,11 @@ let
               Address = 10.10.10.5/24
               ListenPort = 51820
               PrivateKey = WIREGUARD_PRIVATE_KEY
+
+              [Peer]
+              PublicKey = WIREGUARD_PRIVATE_KEY
+              AllowedIPs = 10.10.10.0
+              Endpoint = SERVER_IP:PORT
             '';
             mode = "0600";
           };
@@ -199,8 +207,21 @@ let
             partOf = [ "ghaf-session.target" ];
             wantedBy = [ "ghaf-session.target" ];
           };
-        }
-      )
+
+          systemd.user.services.polkit-gnome-authentication-agent-1 = {
+            enable = true;
+            description = "polkit-gnome-authentication-agent-1";
+            after = [ "polkit.service" ];
+            serviceConfig = {
+              Type = "simple";
+              ExecStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
+              Restart = "always";
+              RestartSec = 2;
+              TimeoutStopSec = 10;
+            };
+            wantedBy = ["default.target"];
+          };
+      })
     ];
   };
   cfg = config.ghaf.virtualization.microvm.guivm;

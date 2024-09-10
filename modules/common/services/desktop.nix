@@ -68,7 +68,7 @@ in
 
             {
               name = "Wireguard for ChromiumVM";
-              path = "${pkgs.openssh}/bin/ssh -i ${privateSshKeyPath} -o StrictHostKeyChecking=no chromium-vm run-waypipe wireguard-gui";
+              path = "${pkgs.openssh}/bin/ssh -i ${privateSshKeyPath} -o StrictHostKeyChecking=no chromium-vm run-waypipe wireguard-gui-launcher";
               icon = "${pkgs.icon-pack}/preferences-system-network.svg";
             }
 

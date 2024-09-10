@@ -37,6 +37,10 @@ in
       xdgPdfItem
       xdgOpenPdf
       pkgs.wireguard-gui
+      pkgs.wireguard-tools
+      pkgs.polkit
+      pkgs.polkit_gnome
+      pkgs.wireguard-gui-launcher
     ];
   # TODO create a repository of mac addresses to avoid conflicts
   macAddress = "02:00:00:03:05:01";
@@ -62,6 +66,23 @@ in
           set-sink-volume chromium-speaker 60000
           set-source-volume chromium-mic 60000
         '';
+      };
+
+      ghaf.systemd.withPolkit = true;
+      environment.etc."wireguard/wg0.conf" = {
+          text = ''
+            [Interface]
+            Address = 10.10.10.5/24
+            ListenPort = 51820
+            PrivateKey = WIREGUARD_PRIVATE_KEY
+
+            [Peer]
+            # Name = Server
+            PublicKey = SERVER_PUBLIC_KEY
+            AllowedIPs = 10.10.10.0
+            Endpoint = SERVER_IP:PORT
+          '';
+          mode = "0600";
       };
 
       time.timeZone = config.time.timeZone;
