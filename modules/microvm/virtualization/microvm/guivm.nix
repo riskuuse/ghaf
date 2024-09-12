@@ -134,7 +134,7 @@ let
               PrivateKey = WIREGUARD_PRIVATE_KEY
 
               [Peer]
-              PublicKey = WIREGUARD_PRIVATE_KEY
+              PublicKey = PEER_PUBLIC_KEY
               AllowedIPs = 10.10.10.0
               Endpoint = SERVER_IP:PORT
             '';
