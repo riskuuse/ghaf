@@ -76,6 +76,10 @@ let
                   group = config.ghaf.users.accounts.user;
                   mode = "u=rwx,g=,o=";
                 }
+                {
+                  directory = "/etc/wireguard/";
+                  mode = "0600";
+                }
               ];
             };
           };
