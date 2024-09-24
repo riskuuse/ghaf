@@ -76,10 +76,6 @@ let
                   group = config.ghaf.users.accounts.user;
                   mode = "u=rwx,g=,o=";
                 }
-                {
-                  directory = "/etc/wireguard/";
-                  mode = "0600";
-                }
               ];
             };
           };
@@ -117,9 +113,6 @@ let
               ++ [
                 pkgs.nm-launcher
                 pkgs.pamixer
-                pkgs.wireguard-gui
-                pkgs.wireguard-tools
-                pkgs.polkit_gnome
               ]
               ++ (lib.optional (
                 config.ghaf.profiles.debug.enable && config.ghaf.virtualization.microvm.idsvm.mitmproxy.enable
@@ -129,20 +122,6 @@ let
                 pkgs.glxinfo
                 pkgs.libva-utils
               ];
-          };
-          environment.etc."wireguard/wg0.conf" = {
-            text = ''
-              [Interface]
-              Address = 10.10.10.5/24
-              ListenPort = 51820
-              PrivateKey = WIREGUARD_PRIVATE_KEY
-
-              [Peer]
-              PublicKey = PEER_PUBLIC_KEY
-              AllowedIPs = 10.10.10.0
-              Endpoint = SERVER_IP:PORT
-            '';
-            mode = "0600";
           };
 
           time.timeZone = config.time.timeZone;

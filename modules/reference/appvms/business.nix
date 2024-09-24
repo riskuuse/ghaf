@@ -39,6 +39,10 @@ in
       pkgs.globalprotect-openconnect
       pkgs.openconnect
       pkgs.nftables
+      pkgs.wireguard-tools
+      pkgs.wireguard-gui
+      pkgs.wireguard-gui-launcher
+      pkgs.polkit
     ];
   # TODO create a repository of mac addresses to avoid conflicts
   macAddress = "02:00:00:03:10:01";
@@ -65,6 +69,36 @@ in
           set-source-volume chromium-mic 60000
         '';
       };
+      ghaf.systemd.withPolkit = true;
+      security.polkit = {
+        enable = true;
+        debug = true;
+        extraConfig = ''
+          polkit.addRule(function(action, subject) {
+          if (action.id == "org.freedesktop.policykit.exec" &&
+              subject.user == "ghaf") {
+            return polkit.Result.YES;
+            }
+          });
+        '';
+      };
+
+      environment.etc."wireguard/wg0.conf" = {
+          text = ''
+            [Interface]
+            Address = 10.10.10.5/24
+            ListenPort = 51820
+            PrivateKey = WIREGUARD_PRIVATE_KEY
+
+            [Peer]
+            # Name = Server
+            PublicKey = SERVER_PUBLIC_KEY
+            AllowedIPs = 10.10.10.0
+            Endpoint = SERVER_IP:PORT
+          '';
+          mode = "0600";
+      };
+
 
       time.timeZone = config.time.timeZone;
 
@@ -85,7 +119,9 @@ in
             "outlook":      "${config.ghaf.givc.appPrefix}/run-waypipe ${config.ghaf.givc.appPrefix}/chromium --enable-features=UseOzonePlatform --ozone-platform=wayland --app=https://outlook.office.com/mail/ ${config.ghaf.givc.idsExtraArgs}",
             "office":       "${config.ghaf.givc.appPrefix}/run-waypipe ${config.ghaf.givc.appPrefix}/chromium --enable-features=UseOzonePlatform --ozone-platform=wayland --app=https://microsoft365.com ${config.ghaf.givc.idsExtraArgs}",
             "teams":        "${config.ghaf.givc.appPrefix}/run-waypipe ${config.ghaf.givc.appPrefix}/chromium --enable-features=UseOzonePlatform --ozone-platform=wayland --app=https://teams.microsoft.com ${config.ghaf.givc.idsExtraArgs}",
-            "gpclient":     "${config.ghaf.givc.appPrefix}/run-waypipe ${config.ghaf.givc.appPrefix}/gpclient -platform wayland"
+            "gpclient":     "${config.ghaf.givc.appPrefix}/run-waypipe ${config.ghaf.givc.appPrefix}/gpclient -platform wayland",
+            "wireguard-gui": "${config.ghaf.givc.appPrefix}/run-waypipe ${config.ghaf.givc.appPrefix}/wireguard-gui",
+            "wireguard-gui-launcher": "${config.ghaf.givc.appPrefix}/run-waypipe ${config.ghaf.givc.appPrefix}/wireguard-gui-launcher"
           }'';
       };
 

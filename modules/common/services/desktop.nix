@@ -67,8 +67,8 @@ in
             }
 
             {
-              name = "Wireguard for ChromiumVM";
-              path = "${pkgs.givc-cli}/bin/givc-cli ${cliArgs} start --vm chromium-vm wireguard-gui-launcher";
+              name = "Wireguard for BusinessVM";
+              path = "${pkgs.givc-cli}/bin/givc-cli ${cliArgs} start --vm business-vm wireguard-gui-launcher";
               icon = "${pkgs.icon-pack}/preferences-system-network.svg";
             }
 
