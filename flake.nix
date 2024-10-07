@@ -146,7 +146,7 @@
     };
 
     impermanence = {
-      url = "github:nix-community/impermanence";
+      url = "path:/home/risto/work/ghaf/impermanence";
     };
 
     givc = {
