@@ -73,32 +73,128 @@ in
       security.polkit = {
         enable = true;
         debug = true;
+        /*
         extraConfig = ''
           polkit.addRule(function(action, subject) {
+            polkit.log("user " +  subject.user + " is attempting action " + action.id + " from PID " + subject.pid);
+            polkit.log("subject = " + subject);
+            polkit.log("action = " + action);
+            polkit.log("actioncmdline = " + action.lookup("command_line"));
+          });
+          polkit.addRule(function(action, subject) {
           if (action.id == "org.freedesktop.policykit.exec" &&
+              # RegExp('^ $')
+              # action.lookup("command_line") == "/run/current-system/sw/bin/env WAYLAND_DISPLAY=wayland- \
+              # XDG_RUNTIME_DIR=/run/user/1000 \
+              # XDG_DATA_DIRS=/nix/store/b4mxjw5xdpg4xdc5mpcc0aslv020fdil-wireguard-gui-0.1.0/share:/nix/store/q9j6abi6igq18j6r83816ijh7iml18n6-gsettings-desktop-schemas-46.0/share/gsettings-schemas/gsettings-desktop-schemas-46.0:/nix/store/b0mia9q9d2cg6zkyhv7ra66nhcchsrws-gtk+3-3.24.43/share/gsettings-schemas/gtk+3-3.24.43:/nix/store/d6mpknk4fx2zcll7h0z31nhwbm0zcgc7-gtk4-4.14.4/share/gsettings-schemas/gtk4-4.14.4:/home/ghaf/.nix-profile/share:/nix/profile/share:/home/ghaf/.local/state/nix/profile/share:/etc/profiles/per-user/ghaf/share:/nix/var/nix/profiles/default/share:/run/current-system/sw/share \
+              # PATH=/run/wrappers/bin:/run/current-system/sw/bin \
+              # LIBGL_ALWAYS_SOFTWARE=true \
+              # /nix/store/b4mxjw5xdpg4xdc5mpcc0aslv020fdil-wireguard-gui-0.1.0/bin/.wireguard-gui-wrapped" &&
+              subject.user == "ghaf") {
+            return polkit.Result.YES;
+            }
+          });
+        '';
+        */
+        extraConfig = ''
+          polkit.addRule(function(action, subject) {
+            polkit.log("user " +  subject.user + " is attempting action " + action.id + " from PID " + subject.pid);
+            polkit.log("subject = " + subject);
+            polkit.log("action = " + action);
+            polkit.log("actioncmdline = " + action.lookup("command_line"));
+          });
+          polkit.addRule(function(action, subject) {
+            var expectedcmdline = "XDG_RUNTIME_DIR=/run/user/1000 " +
+                                  "XDG_DATA_DIRS=${pkgs.wireguard-gui}/share:" +
+                                  "/nix/store/q9j6abi6igq18j6r83816ijh7iml18n6-gsettings-desktop-schemas-46.0/share/gsettings-schemas/gsettings-desktop-schemas-46.0:" +
+                                  "/nix/store/b0mia9q9d2cg6zkyhv7ra66nhcchsrws-gtk+3-3.24.43/share/gsettings-schemas/gtk+3-3.24.43:" +
+                                  "/nix/store/d6mpknk4fx2zcll7h0z31nhwbm0zcgc7-gtk4-4.14.4/share/gsettings-schemas/gtk4-4.14.4:" +
+                                  "/home/ghaf/.nix-profile/share:" +
+                                  "/nix/profile/share:" +
+                                  "/home/ghaf/.local/state/nix/profile/share:" +
+                                  "/etc/profiles/per-user/ghaf/share:" +
+                                  "/nix/var/nix/profiles/default/share:" +
+                                  "/run/current-system/sw/share " +
+                                  "PATH=/run/wrappers/bin:/run/current-system/sw/bin " +
+                                  "LIBGL_ALWAYS_SOFTWARE=true " +
+                                  "/nix/store/b4mxjw5xdpg4xdc5mpcc0aslv020fdil-wireguard-gui-0.1.0/bin/.wireguard-gui-wrapped";
+            polkit.log("Expected commandline = " + expectedcmdline);
+            if (action.id == "org.freedesktop.policykit.exec" &&
+              RegExp('^/run/current-system/sw/bin/env WAYLAND_DISPLAY=wayland-([a-zA-Z0-9]){8} $').test(action.lookup("command_line").slice(0,64)) === true &&
+              action.lookup("command_line").slice(64) == expectedcmdline &&
               subject.user == "ghaf") {
             return polkit.Result.YES;
             }
           });
         '';
       };
-
+/*
       environment.etc."wireguard/wg0.conf" = {
           text = ''
             [Interface]
             Address = 10.10.10.5/24
             ListenPort = 51820
             PrivateKey = WIREGUARD_PRIVATE_KEY
-
             [Peer]
             # Name = Server
-            PublicKey = SERVER_PUBLIC_KEY
+            PublicKey = PEER_PUBLIC_KEY
             AllowedIPs = 10.10.10.0
-            Endpoint = SERVER_IP:PORT
+            Endpoint = PEER_IP:PORT
           '';
           mode = "0600";
       };
+      */
+      ghaf.storagevm.directories = [
+        {
+          directory = "/etc/wireguard/";
+          mode = "u=rwx,g=,o=";
+        }
+      ];
+      ghaf.storagevm.files = [ "/etc/wireguard/wg0.conf" ];
 
+      systemd.services."wireguard-template-conf" =
+        let
+          confScript = pkgs.writeShellScriptBin "wireguard-template-conf" ''
+            set -xeuo pipefail
+            wgDir="/etc/wireguard/"
+            confFile="$wgDir""wg0.conf"
+
+            if [[ -d "$wgDir" ]]; then
+              echo "$wgDir already exists."
+            else
+              mkdir -p "$wgDir"
+            fi
+            if [[ -e "$confFile" ]]; then
+              echo "$confFile already exists."
+            else
+            cat > "$confFile" <<EOF
+            [Interface]
+            Address = 10.10.10.5/24
+            ListenPort = 51820
+            PrivateKey = WIREGUARD_PRIVATE_KEY
+            [Peer]
+            # Name = Server
+            PublicKey = PEER_PUBLIC_KEY
+            AllowedIPs = 10.10.10.0
+            Endpoint = PEER_IP:PORT
+            EOF
+            fi
+            chmod 0600 "$confFile"
+          '';
+        in
+        {
+          enable = true;
+          description = "Generate template WireGuard config file";
+          path = [ confScript ];
+          wantedBy = [ "multi-user.target" ];
+          serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+            StandardOutput = "journal";
+            StandardError = "journal";
+            ExecStart = "${confScript}/bin/wireguard-template-conf";
+          };
+        };
 
       time.timeZone = config.time.timeZone;
 
@@ -120,7 +216,6 @@ in
             "office":       "${config.ghaf.givc.appPrefix}/run-waypipe ${config.ghaf.givc.appPrefix}/chromium --enable-features=UseOzonePlatform --ozone-platform=wayland --app=https://microsoft365.com ${config.ghaf.givc.idsExtraArgs}",
             "teams":        "${config.ghaf.givc.appPrefix}/run-waypipe ${config.ghaf.givc.appPrefix}/chromium --enable-features=UseOzonePlatform --ozone-platform=wayland --app=https://teams.microsoft.com ${config.ghaf.givc.idsExtraArgs}",
             "gpclient":     "${config.ghaf.givc.appPrefix}/run-waypipe ${config.ghaf.givc.appPrefix}/gpclient -platform wayland",
-            "wireguard-gui": "${config.ghaf.givc.appPrefix}/run-waypipe ${config.ghaf.givc.appPrefix}/wireguard-gui",
             "wireguard-gui-launcher": "${config.ghaf.givc.appPrefix}/run-waypipe ${config.ghaf.givc.appPrefix}/wireguard-gui-launcher"
           }'';
       };
