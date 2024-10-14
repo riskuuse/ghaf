@@ -37,10 +37,6 @@ rustPlatform.buildRustPackage rec {
        --set G_MESSAGES_DEBUG all
   '';
 
-  postInstall = ''
-    mkdir -p $out/share/polkit-1/actions
-    cp deb/usr/share/polkit-1/actions/wireguard-gui.policy $out/share/polkit-1/actions
-  '';
   cargoHash = "sha256-XO/saJfdiawN8CF6oF5HqrvLBllNueFUiE+7A7XWC5M=";
   # cargoSha256 = "";
 }
