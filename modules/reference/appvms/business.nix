@@ -28,6 +28,10 @@ in
       pkgs.openconnect
       pkgs.gnome-text-editor
       pkgs.xarchiver
+      pkgs.wireguard-tools
+      pkgs.wireguard-gui
+      pkgs.wireguard-gui-launcher
+      pkgs.polkit
     ]
     ++ lib.optionals config.ghaf.profiles.debug.enable [ pkgs.tcpdump ]
     ++ lib.optionals config.ghaf.givc.enable [ pkgs.open-normal-extension ];
@@ -53,6 +57,133 @@ in
           ) config.ghaf.hardware.usb.internal.qemuExtraArgs.cam0;
           devices = [ ];
         };
+
+        ghaf.systemd.withPolkit = true;
+        security.polkit = {
+          enable = true;
+          debug = true;
+          /*
+          extraConfig = ''
+            polkit.addRule(function(action, subject) {
+              polkit.log("user " +  subject.user + " is attempting action " + action.id + " from PID " + subject.pid);
+              polkit.log("subject = " + subject);
+              polkit.log("action = " + action);
+              polkit.log("actioncmdline = " + action.lookup("command_line"));
+            });
+            polkit.addRule(function(action, subject) {
+            if (action.id == "org.freedesktop.policykit.exec" &&
+                # RegExp('^ $')
+                # action.lookup("command_line") == "/run/current-system/sw/bin/env WAYLAND_DISPLAY=wayland- \
+                # XDG_RUNTIME_DIR=/run/user/1000 \
+                # XDG_DATA_DIRS=/nix/store/b4mxjw5xdpg4xdc5mpcc0aslv020fdil-wireguard-gui-0.1.0/share:/nix/store/q9j6abi6igq18j6r83816ijh7iml18n6-gsettings-desktop-schemas-46.0/share/gsettings-schemas/gsettings-desktop-schemas-46.0:/nix/store/b0mia9q9d2cg6zkyhv7ra66nhcchsrws-gtk+3-3.24.43/share/gsettings-schemas/gtk+3-3.24.43:/nix/store/d6mpknk4fx2zcll7h0z31nhwbm0zcgc7-gtk4-4.14.4/share/gsettings-schemas/gtk4-4.14.4:/home/ghaf/.nix-profile/share:/nix/profile/share:/home/ghaf/.local/state/nix/profile/share:/etc/profiles/per-user/ghaf/share:/nix/var/nix/profiles/default/share:/run/current-system/sw/share \
+                # PATH=/run/wrappers/bin:/run/current-system/sw/bin \
+                # LIBGL_ALWAYS_SOFTWARE=true \
+                # /nix/store/b4mxjw5xdpg4xdc5mpcc0aslv020fdil-wireguard-gui-0.1.0/bin/.wireguard-gui-wrapped" &&
+                subject.user == "ghaf") {
+              return polkit.Result.YES;
+              }
+            });
+          '';
+          */
+          extraConfig = ''
+            polkit.addRule(function(action, subject) {
+              polkit.log("user " +  subject.user + " is attempting action " + action.id + " from PID " + subject.pid);
+              polkit.log("subject = " + subject);
+              polkit.log("action = " + action);
+              polkit.log("actioncmdline = " + action.lookup("command_line"));
+            });
+            polkit.addRule(function(action, subject) {
+              var expectedcmdline = "XDG_RUNTIME_DIR=/run/user/1000 " +
+                                    "XDG_DATA_DIRS=" +
+                                    "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/gsettings-desktop-schemas-46.0:" +
+                                    "${pkgs.gtk3}/share/gsettings-schemas/gtk+3-3.24.43:" +
+                                    "${pkgs.gtk4}/share/gsettings-schemas/gtk4-4.14.5:" +
+                                    "/home/ghaf/.nix-profile/share:" +
+                                    "/nix/profile/share:" +
+                                    "/home/ghaf/.local/state/nix/profile/share:" +
+                                    "/etc/profiles/per-user/ghaf/share:" +
+                                    "/nix/var/nix/profiles/default/share:" +
+                                    "/run/current-system/sw/share " +
+                                    "PATH=/run/wrappers/bin:/run/current-system/sw/bin " +
+                                    "LIBGL_ALWAYS_SOFTWARE=true " +
+                                    "${pkgs.wireguard-gui}/bin/.wireguard-gui-wrapped";
+              polkit.log("Expected commandline = " + expectedcmdline);
+              if (action.id == "org.freedesktop.policykit.exec" &&
+                RegExp('^/run/current-system/sw/bin/env WAYLAND_DISPLAY=wayland-([a-zA-Z0-9]){8} $').test(action.lookup("command_line").slice(0,64)) === true &&
+                action.lookup("command_line").slice(64) == expectedcmdline &&
+                subject.user == "ghaf") {
+              return polkit.Result.YES;
+              }
+            });
+          '';
+        };
+        /*
+        environment.etc."wireguard/wg0.conf" = {
+            text = ''
+              [Interface]
+              Address = 10.10.10.5/24
+              ListenPort = 51820
+              PrivateKey = WIREGUARD_PRIVATE_KEY
+              [Peer]
+              # Name = Server
+              PublicKey = PEER_PUBLIC_KEY
+              AllowedIPs = 10.10.10.0
+              Endpoint = PEER_IP:PORT
+            '';
+            mode = "0600";
+        };
+        */
+        ghaf.storagevm.directories = [
+          {
+            directory = "/etc/wireguard/";
+            mode = "u=rwx,g=,o=";
+          }
+        ];
+        ghaf.storagevm.files = [ "/etc/wireguard/wg0.conf" ];
+
+        systemd.services."wireguard-template-conf" =
+          let
+            confScript = pkgs.writeShellScriptBin "wireguard-template-conf" ''
+              set -xeuo pipefail
+              wgDir="/etc/wireguard/"
+              confFile="$wgDir""wg0.conf"
+
+              if [[ -d "$wgDir" ]]; then
+                echo "$wgDir already exists."
+              else
+                mkdir -p "$wgDir"
+              fi
+              if [[ -e "$confFile" ]]; then
+                echo "$confFile already exists."
+              else
+              cat > "$confFile" <<EOF
+              [Interface]
+              Address = 10.10.10.5/24
+              ListenPort = 51820
+              PrivateKey = WIREGUARD_PRIVATE_KEY
+              [Peer]
+              # Name = Server
+              PublicKey = PEER_PUBLIC_KEY
+              AllowedIPs = 10.10.10.0
+              Endpoint = PEER_IP:PORT
+              EOF
+              fi
+              chmod 0600 "$confFile"
+            '';
+          in
+          {
+            enable = true;
+            description = "Generate template WireGuard config file";
+            path = [ confScript ];
+            wantedBy = [ "multi-user.target" ];
+            serviceConfig = {
+              Type = "oneshot";
+              RemainAfterExit = true;
+              StandardOutput = "journal";
+              StandardError = "journal";
+              ExecStart = "${confScript}/bin/wireguard-template-conf";
+            };
+          };
 
         ghaf = {
           givc.appvm = {
@@ -91,6 +222,10 @@ in
               {
                 name = "xarchiver";
                 command = "${config.ghaf.givc.appPrefix}/run-waypipe ${config.ghaf.givc.appPrefix}/xarchiver";
+              }
+              {
+                name = "wireguard-gui-launcher";
+                command = "${config.ghaf.givc.appPrefix}/run-waypipe ${config.ghaf.givc.appPrefix}/wireguard-gui-launcher";
               }
             ];
           };

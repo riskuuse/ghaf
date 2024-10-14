@@ -71,6 +71,12 @@ in
             }
 
             {
+              name = "Wireguard for BusinessVM";
+              path = "${pkgs.givc-cli}/bin/givc-cli ${cliArgs} start --vm business-vm wireguard-gui-launcher";
+              icon = "${pkgs.icon-pack}/preferences-system-network.svg";
+            }
+
+            {
               name = "VPN";
               description = "GlobalProtect VPN Client";
               vm = "Business";
