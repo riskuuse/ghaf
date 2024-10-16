@@ -60,7 +60,6 @@ let
               withTimesyncd = true;
               withDebug = config.ghaf.profiles.debug.enable;
               withHardenedConfigs = true;
-              withPolkit = true;
             };
             givc.guivm.enable = true;
             # Logging client configuration
@@ -229,21 +228,8 @@ let
               wantedBy = [ "ghaf-session.target" ];
             };
           };
-
-          systemd.user.services.polkit-gnome-authentication-agent-1 = {
-            enable = true;
-            description = "polkit-gnome-authentication-agent-1";
-            after = [ "polkit.service" ];
-            serviceConfig = {
-              Type = "simple";
-              ExecStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
-              Restart = "always";
-              RestartSec = 2;
-              TimeoutStopSec = 10;
-            };
-            wantedBy = ["default.target"];
-          };
-      })
+        }
+      )
     ];
   };
   cfg = config.ghaf.virtualization.microvm.guivm;
