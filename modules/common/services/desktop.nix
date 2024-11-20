@@ -64,6 +64,13 @@ in
             # }
 
             {
+              name = "Wireguard for ChromeVM";
+              vm = "Chromium";
+              path = "${pkgs.givc-cli}/bin/givc-cli ${cliArgs} start --vm chrome-vm wireguard-gui-launcher";
+              icon = "preferences-system-network";
+            }
+
+            {
               name = "Trusted Browser";
               description = "Isolated Trusted Browsing";
               vm = "Business";
@@ -79,6 +86,13 @@ in
               vm = "Chrome";
               path = "${pkgs.givc-cli}/bin/givc-cli ${cliArgs} start --vm chrome-vm google-chrome";
               icon = "google-chrome";
+            }
+
+            {
+              name = "Wireguard for BusinessVM";
+              vm = "Business";
+              path = "${pkgs.givc-cli}/bin/givc-cli ${cliArgs} start --vm business-vm wireguard-gui-launcher";
+              icon = "preferences-system-network";
             }
 
             {

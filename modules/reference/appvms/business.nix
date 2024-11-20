@@ -36,7 +36,6 @@ in
       pkgs.openconnect
       gnomeTextEditor
       pkgs.xarchiver
-
     ]
     ++ lib.optionals config.ghaf.profiles.debug.enable [ pkgs.tcpdump ]
     ++ lib.optionals config.ghaf.givc.enable [ pkgs.open-normal-extension ];
@@ -102,6 +101,10 @@ in
                 name = "xarchiver";
                 command = "${config.ghaf.givc.appPrefix}/run-waypipe ${config.ghaf.givc.appPrefix}/xarchiver";
               }
+              {
+                name = "wireguard-gui-launcher";
+                command = "${config.ghaf.givc.appPrefix}/run-waypipe ${config.ghaf.givc.appPrefix}/wireguard-gui-launcher";
+              }
             ];
           };
 
@@ -115,6 +118,11 @@ in
           };
 
           services.xdghandlers.enable = true;
+          services.wireguard-gui = {
+            enable = true;
+            name = "${name}";
+          };
+
         };
         environment.etc."opt/chrome/native-messaging-hosts/fi.ssrc.open_normal.json" =
           mkIf config.ghaf.givc.enable

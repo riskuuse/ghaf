@@ -13,5 +13,6 @@
     ./yubikey.nix
     ./bluetooth.nix
     ./disks.nix
+    ./wireguard-gui.nix
   ];
 }
